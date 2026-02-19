@@ -63,6 +63,18 @@ export default function FarmerLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="add-crop"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="my-crops"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
