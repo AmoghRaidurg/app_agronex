@@ -115,6 +115,11 @@ export default function PhoneAuth() {
         <View style={styles.content}>
           <Text style={styles.logo}>AGRONEX</Text>
           <Text style={styles.subtitle}>Agricultural Marketplace</Text>
+          
+          <View style={styles.demoBanner}>
+            <Text style={styles.demoBannerText}>🧪 DEMO MODE</Text>
+            <Text style={styles.demoBannerSubtext}>No SMS sent - Use any 6-digit code</Text>
+          </View>
 
           {!showOTP ? (
             <View style={styles.form}>
