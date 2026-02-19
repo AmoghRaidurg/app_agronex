@@ -1,21 +1,35 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "AGRONEX",
+    "slug": "agronex-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "scheme": "agronex",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.agronex.farmconnect",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Take photos of your crops",
+        "NSPhotoLibraryUsageDescription": "Choose crop images from gallery",
+        "NSLocationWhenInUseUsageDescription": "Show nearby farmers"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000"
+        "backgroundColor": "#10b981"
       },
+      "package": "com.agronex.farmconnect",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
       "edgeToEdgeEnabled": true
     },
     "web": {
@@ -31,12 +45,26 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#000"
+          "backgroundColor": "#10b981"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Choose crop images from your gallery"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "firebaseApiKey": "AIzaSyBbbBxI9zqARMRcxP4jlexJBPAkyU3ZVpY",
+      "firebaseAuthDomain": "agronex-a227c.firebaseapp.com",
+      "firebaseProjectId": "agronex-a227c",
+      "firebaseStorageBucket": "agronex-a227c.firebasestorage.app",
+      "firebaseMessagingSenderId": "176406212031",
+      "firebaseAppId": "1:176406212031:android:23fc69dee7d78ada9ec50a"
     }
   }
 }
