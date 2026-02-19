@@ -26,7 +26,7 @@ export default function Marketplace() {
 
   const fetchCrops = async () => {
     try {
-      const backendUrl = process.env.EXPO_BACKEND_URL || '';
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       const response = await fetch(`${backendUrl}/api/crops`);
       if (response.ok) {
         const data = await response.json();

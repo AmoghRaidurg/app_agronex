@@ -38,7 +38,7 @@ export default function CompleteProfile() {
 
     setLoading(true);
     try {
-      const backendUrl = process.env.EXPO_BACKEND_URL || '';
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       const response = await fetch(`${backendUrl}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

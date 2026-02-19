@@ -21,7 +21,7 @@ export default function Orders() {
     if (!userData) return;
     
     try {
-      const backendUrl = process.env.EXPO_BACKEND_URL || '';
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       const response = await fetch(
         `${backendUrl}/api/orders/user/${userData.uid}?role=${userData.role}`
       );

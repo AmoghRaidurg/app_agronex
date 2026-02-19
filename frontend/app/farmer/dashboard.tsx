@@ -25,7 +25,7 @@ export default function FarmerDashboard() {
     if (!userData) return;
     
     try {
-      const backendUrl = process.env.EXPO_BACKEND_URL || '';
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       const response = await fetch(`${backendUrl}/api/analytics/farmer/${userData.uid}`);
       if (response.ok) {
         const data = await response.json();

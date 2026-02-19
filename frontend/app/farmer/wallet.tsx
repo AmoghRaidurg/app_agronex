@@ -21,7 +21,7 @@ export default function Wallet() {
     if (!userData) return;
     
     try {
-      const backendUrl = process.env.EXPO_BACKEND_URL || '';
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       const response = await fetch(`${backendUrl}/api/wallet/history/${userData.uid}`);
       if (response.ok) {
         const data = await response.json();

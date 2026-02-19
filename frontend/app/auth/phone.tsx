@@ -67,7 +67,7 @@ export default function PhoneAuth() {
       const demoUid = `demo-${phoneNumber}`;
       
       // Check if user profile exists
-      const backendUrl = process.env.EXPO_BACKEND_URL || '';
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       const response = await fetch(`${backendUrl}/api/users/${demoUid}`);
       
       if (response.status === 404) {

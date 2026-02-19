@@ -23,7 +23,7 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const backendUrl = process.env.EXPO_BACKEND_URL || '';
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       const response = await fetch(`${backendUrl}/api/admin/stats`);
       if (response.ok) {
         const data = await response.json();
