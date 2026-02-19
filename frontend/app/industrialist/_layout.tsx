@@ -1,1 +1,1 @@
-export { default } from './trader/_layout';
+export { default } from '../trader/_layout';
