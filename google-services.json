@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "176406212031",
+    "project_id": "agronex-a227c",
+    "storage_bucket": "agronex-a227c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176406212031:android:23fc69dee7d78ada9ec50a",
+        "android_client_info": {
+          "package_name": "com.agronex.farmconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbbBxI9zqARMRcxP4jlexJBPAkyU3ZVpY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
