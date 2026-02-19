@@ -39,7 +39,11 @@ export default function PhoneAuth() {
         setShowOTP(true);
         setVerificationId('demo-verification-id');
         setLoading(false);
-        Alert.alert('OTP Sent', 'A 6-digit OTP has been sent to your phone');
+        Alert.alert(
+          'Demo Mode - OTP Simulated ✅', 
+          '⚠️ This is DEMO mode. No SMS sent.\n\nEnter ANY 6-digit code to continue.\n\nExample: 123456',
+          [{ text: 'Got it!', style: 'default' }]
+        );
       }, 1000);
     } catch (error: any) {
       setLoading(false);
