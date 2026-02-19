@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserData = async (uid: string) => {
     try {
-      const backendUrl = process.env.EXPO_BACKEND_URL || '';
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
       const response = await fetch(`${backendUrl}/api/users/${uid}`);
       if (response.ok) {
         const data = await response.json();
