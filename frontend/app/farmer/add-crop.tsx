@@ -25,7 +25,7 @@ export default function AddCrop() {
   const [quantity, setQuantity] = useState('');
   const [unit, setUnit] = useState('kg');
   const [price, setPrice] = useState('');
-  const [harvest Date, setHarvestDate] = useState('');
+  const [harvestDate, setHarvestDate] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [location, setLocation] = useState(userData?.address || '');
