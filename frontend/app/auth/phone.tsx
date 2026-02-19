@@ -222,6 +222,28 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginBottom: 48,
   },
+  demoBanner: {
+    backgroundColor: '#fef3c7',
+    borderWidth: 2,
+    borderColor: '#f59e0b',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center',
+  },
+  demoBannerText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#92400e',
+    marginBottom: 4,
+  },
+  demoBannerSubtext: {
+    fontSize: 13,
+    color: '#92400e',
+    textAlign: 'center',
+  },
   form: {
     width: '100%',
     maxWidth: 400,
