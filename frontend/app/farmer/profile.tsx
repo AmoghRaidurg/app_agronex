@@ -24,7 +24,8 @@ export default function Profile() {
         onPress: async () => {
           try {
             await signOut();
-            router.replace('/auth/phone');
+            // Use href to navigate outside tab group
+            router.replace('/(auth)/phone' as any);
           } catch (error) {
             Alert.alert('Error', 'Failed to sign out');
           }
