@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  AppState,
 } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,6 +24,9 @@ import {
 } from '../../lib/razorpayWallet';
 import { fetchWalletBalance, fetchWalletHistory, isWalletCredit } from '../../lib/walletApi';
 import { WALLET_TYPE_LABELS, type WalletHistoryType } from '../../lib/commerceMeta';
+import { friendlyError } from '../../lib/asyncUtils';
+import { ErrorBanner } from '../../components/ScreenPrimitives';
+import { flatListPerfProps, TAB_LIST_PADDING } from '../../lib/listConfig';
 
 export default function Wallet() {
   const { userData, user, refreshUserData } = useAuth();
@@ -37,8 +41,9 @@ export default function Wallet() {
   const [amount, setAmount] = useState('');
   const [processing, setProcessing] = useState(false);
   const [pollingStatus, setPollingStatus] = useState('');
+  const pendingPaymentRef = useRef(false);
 
-  const fetchWallet = async () => {
+  const fetchWallet = useCallback(async () => {
     if (!userData) return;
     try {
       setFetchError(null);
@@ -48,20 +53,32 @@ export default function Wallet() {
       ]);
       setBalance(bal);
       setHistory(hist);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching wallet:', error);
-      setFetchError(error.message || 'Failed to load wallet');
+      setFetchError(friendlyError(error, 'Failed to load wallet'));
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [userData]);
 
   useFocusEffect(
     useCallback(() => {
       fetchWallet();
-    }, [userData])
+    }, [fetchWallet])
   );
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active' && userData) {
+        fetchWallet();
+        if (pendingPaymentRef.current) {
+          refreshUserData();
+        }
+      }
+    });
+    return () => sub.remove();
+  }, [userData, fetchWallet, refreshUserData]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -81,6 +98,7 @@ export default function Wallet() {
 
     setProcessing(true);
     setPollingStatus('Initializing secure gateway...');
+    pendingPaymentRef.current = true;
     try {
       // 1. Edge Function creates Razorpay Order & payment_intent
       const order = await createWalletTopUpOrder(amt);
@@ -109,10 +127,11 @@ export default function Wallet() {
         Alert.alert('Verification Pending', 'We are still waiting for bank confirmation. Your wallet will be credited shortly if successful.');
         setShowPayment(false);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Payment error:', error);
-      Alert.alert('Payment Cancelled', error.message || 'Payment flow was interrupted.');
+      Alert.alert('Payment Cancelled', friendlyError(error, 'Payment flow was interrupted.'));
     } finally {
+      pendingPaymentRef.current = false;
       setProcessing(false);
       setPollingStatus('');
     }
@@ -181,10 +200,7 @@ export default function Wallet() {
       </View>
 
       {fetchError ? (
-        <View style={styles.errorBanner}>
-          <Ionicons name="alert-circle" size={18} color="#b91c1c" />
-          <Text style={styles.errorText}>{fetchError}</Text>
-        </View>
+        <ErrorBanner message={fetchError} onRetry={() => { setLoading(true); fetchWallet(); }} />
       ) : null}
 
       {/* Balance Card */}
@@ -203,8 +219,9 @@ export default function Wallet() {
         data={history}
         keyExtractor={(item: any) => item.id}
         renderItem={renderHistoryItem}
-        contentContainerStyle={[styles.listContent, { paddingBottom: 100 }]}
+        contentContainerStyle={[styles.listContent, { paddingBottom: TAB_LIST_PADDING }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        {...flatListPerfProps}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="wallet-outline" size={48} color="#d1d5db" />

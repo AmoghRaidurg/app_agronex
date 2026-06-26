@@ -13,11 +13,13 @@ import {
   Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { buildFarmerListingMeta } from '../../lib/commerceMeta';
+import { friendlyError } from '../../lib/asyncUtils';
 
 export default function AddCrop() {
   const { userData } = useAuth();
@@ -37,12 +39,29 @@ export default function AddCrop() {
   const categories = ['Grains', 'Vegetables', 'Fruits', 'Pulses', 'Raw Materials'];
   const units = ['kg', 'quintal', 'ton', 'pieces'];
 
+  const requestMediaPermission = async (type: 'library' | 'camera') => {
+    const result =
+      type === 'camera'
+        ? await ImagePicker.requestCameraPermissionsAsync()
+        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (result.status === 'granted') return true;
+
+    Alert.alert(
+      'Permission required',
+      type === 'camera'
+        ? 'Camera access is needed to photograph your crop.'
+        : 'Photo library access is needed to upload crop images.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Open Settings', onPress: () => Linking.openSettings() },
+      ],
+    );
+    return false;
+  };
+
   const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission Denied', 'Need camera roll permission to upload images');
-      return;
-    }
+    if (!(await requestMediaPermission('library'))) return;
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -57,7 +76,26 @@ export default function AddCrop() {
     }
   };
 
+  const takePhoto = async () => {
+    if (!(await requestMediaPermission('camera'))) return;
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.5,
+      base64: true,
+    });
+
+    if (!result.canceled && result.assets[0].base64) {
+      setImageBase64(`data:image/jpeg;base64,${result.assets[0].base64}`);
+    }
+  };
+
   const handleSubmit = async () => {
+    if (!userData?.uid) {
+      Alert.alert('Error', 'Please sign in again to list crops');
+      return;
+    }
     if (!name || !quantity || !price || !category) {
       Alert.alert('Error', 'Please fill all required fields');
       return;
@@ -69,10 +107,10 @@ export default function AddCrop() {
 
     setLoading(true);
     try {
-      const description = buildFarmerListingMeta(userData?.uid || '');
+      const description = buildFarmerListingMeta(userData.uid);
 
       const { error } = await supabase.from('products').insert({
-        seller_id: userData?.uid,
+        seller_id: userData.uid,
         name,
         crop_type: category,
         quantity: parseFloat(quantity),
@@ -87,8 +125,8 @@ export default function AddCrop() {
 
       Alert.alert('Success', 'Crop listed successfully!');
       router.back();
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to add crop');
+    } catch (error: unknown) {
+      Alert.alert('Error', friendlyError(error, 'Failed to add crop'));
     } finally {
       setLoading(false);
     }
@@ -118,6 +156,16 @@ export default function AddCrop() {
             </View>
           )}
         </TouchableOpacity>
+        <View style={styles.imageActions}>
+          <TouchableOpacity style={styles.imageActionBtn} onPress={pickImage}>
+            <Ionicons name="images-outline" size={18} color="#16a34a" />
+            <Text style={styles.imageActionText}>Gallery</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.imageActionBtn} onPress={takePhoto}>
+            <Ionicons name="camera-outline" size={18} color="#16a34a" />
+            <Text style={styles.imageActionText}>Camera</Text>
+          </TouchableOpacity>
+        </View>
 
         <Text style={styles.label}>Crop Name *</Text>
         <TextInput
@@ -289,6 +337,27 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 16,
     color: '#9ca3af',
+  },
+  imageActions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+    marginTop: -12,
+    marginBottom: 24,
+  },
+  imageActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#ecfdf5',
+  },
+  imageActionText: {
+    color: '#16a34a',
+    fontWeight: '600',
+    fontSize: 14,
   },
   label: {
     fontSize: 16,

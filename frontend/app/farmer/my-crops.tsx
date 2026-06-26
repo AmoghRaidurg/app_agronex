@@ -4,17 +4,19 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  Image,
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
-
 import { getProductImage } from '../../lib/utils';
+import { withRetry, friendlyError } from '../../lib/asyncUtils';
+import { ErrorBanner } from '../../components/ScreenPrimitives';
+import { flatListPerfProps, TAB_LIST_PADDING } from '../../lib/listConfig';
 
 export default function MyCrops() {
   const { userData } = useAuth();
@@ -22,31 +24,36 @@ export default function MyCrops() {
   const [crops, setCrops] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const fetchMyCrops = async () => {
+  const fetchMyCrops = useCallback(async () => {
     if (!userData) return;
     
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('seller_id', userData.uid)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      setCrops(data ?? []);
-    } catch (error) {
+      setFetchError(null);
+      const data = await withRetry(async () => {
+        const { data: rows, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('seller_id', userData.uid)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        return rows ?? [];
+      });
+      setCrops(data);
+    } catch (error: unknown) {
       console.error('Error fetching crops:', error);
+      setFetchError(friendlyError(error, 'Failed to load your crops'));
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [userData]);
 
   useFocusEffect(
     useCallback(() => {
       fetchMyCrops();
-    }, [userData?.uid]),
+    }, [fetchMyCrops]),
   );
 
   const onRefresh = () => {
@@ -56,7 +63,7 @@ export default function MyCrops() {
 
   const renderCrop = ({ item }: { item: any }) => (
     <View style={styles.cropCard}>
-      <Image source={{ uri: getProductImage(item.name) }} style={styles.cropImage} />
+      <Image source={{ uri: getProductImage(item.name) }} style={styles.cropImage} contentFit="cover" transition={200} />
       <View style={styles.cropInfo}>
         <Text style={styles.cropName}>{item.name}</Text>
         <Text style={styles.cropCategory}>{item.crop_type}</Text>
@@ -98,14 +105,19 @@ export default function MyCrops() {
         </TouchableOpacity>
       </View>
 
+      {fetchError ? (
+        <ErrorBanner message={fetchError} onRetry={() => { setLoading(true); fetchMyCrops(); }} />
+      ) : null}
+
       <FlatList
         data={crops}
         keyExtractor={(item) => item.id}
         renderItem={renderCrop}
-        contentContainerStyle={[styles.listContent, { paddingBottom: 100 }]}
+        contentContainerStyle={[styles.listContent, { paddingBottom: TAB_LIST_PADDING }]}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        {...flatListPerfProps}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="leaf-outline" size={64} color="#d1d5db" />

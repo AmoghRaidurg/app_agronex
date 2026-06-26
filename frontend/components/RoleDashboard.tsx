@@ -12,6 +12,9 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { fetchWalletBalance } from '../lib/walletApi';
+import { friendlyError } from '../lib/asyncUtils';
+import { ErrorBanner } from './ScreenPrimitives';
+import { TAB_LIST_PADDING } from '../lib/listConfig';
 
 type QuickAction = {
   label: string;
@@ -39,20 +42,23 @@ export default function RoleDashboard({
   const router = useRouter();
   const [balance, setBalance] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
 
-  const loadBalance = async () => {
+  const loadBalance = useCallback(async () => {
     if (!userData || !showWallet) return;
     try {
+      setBalanceError(null);
       setBalance(await fetchWalletBalance(userData.uid));
-    } catch {
+    } catch (error: unknown) {
       setBalance(null);
+      setBalanceError(friendlyError(error, 'Could not load wallet balance'));
     }
-  };
+  }, [userData, showWallet]);
 
   useFocusEffect(
     useCallback(() => {
       loadBalance();
-    }, [userData?.uid, showWallet]),
+    }, [loadBalance]),
   );
 
   const onRefresh = async () => {
@@ -73,8 +79,10 @@ export default function RoleDashboard({
 
       <ScrollView
         style={styles.content}
+        contentContainerStyle={{ paddingBottom: TAB_LIST_PADDING }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
+        {balanceError ? <ErrorBanner message={balanceError} onRetry={loadBalance} /> : null}
         {showWallet && balance !== null && (
           <View style={styles.balanceCard}>
             <Ionicons name="wallet" size={28} color="#fff" />

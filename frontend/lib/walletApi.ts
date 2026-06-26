@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import type { WalletHistoryType } from './commerceMeta';
+import { withRetry } from './asyncUtils';
 
 export interface WalletHistoryEntry {
   id: string;
@@ -25,28 +26,32 @@ function normalizeWalletEntry(row: Record<string, unknown>): WalletHistoryEntry 
 
 /** Authoritative balance from production users table. */
 export async function fetchWalletBalance(userId: string): Promise<number> {
-  const { data, error } = await supabase
-    .from('users')
-    .select('walletBalance')
-    .eq('uid', userId)
-    .single();
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('walletBalance')
+      .eq('uid', userId)
+      .single();
 
-  if (error) throw error;
-  return Number(data?.walletBalance) || 0;
+    if (error) throw error;
+    return Number(data?.walletBalance) || 0;
+  });
 }
 
 export async function fetchWalletHistory(userId: string, limit?: number): Promise<WalletHistoryEntry[]> {
-  let query = supabase
-    .from('wallet_history')
-    .select('*')
-    .eq('userId', userId)
-    .order('createdAt', { ascending: false });
+  return withRetry(async () => {
+    let query = supabase
+      .from('wallet_history')
+      .select('*')
+      .eq('userId', userId)
+      .order('createdAt', { ascending: false });
 
-  if (limit) query = query.limit(limit);
+    if (limit) query = query.limit(limit);
 
-  const { data, error } = await query;
-  if (error) throw error;
-  return (data ?? []).map((row) => normalizeWalletEntry(row as Record<string, unknown>));
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data ?? []).map((row) => normalizeWalletEntry(row as Record<string, unknown>));
+  });
 }
 
 export function isWalletCredit(type: string): boolean {

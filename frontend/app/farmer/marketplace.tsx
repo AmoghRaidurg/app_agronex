@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
-  Image,
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { getProductImage } from '../../lib/utils';
 import { parseCommerceMeta } from '../../lib/commerceMeta';
+import { withRetry, friendlyError } from '../../lib/asyncUtils';
+import { ErrorBanner, EmptyState } from '../../components/ScreenPrimitives';
+import { flatListPerfProps, TAB_LIST_PADDING } from '../../lib/listConfig';
 
 export default function Marketplace() {
   const router = useRouter();
@@ -34,16 +36,18 @@ export default function Marketplace() {
   const fetchCrops = async () => {
     try {
       setFetchError(null);
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
+      const { data } = await withRetry(async () => {
+        const res = await supabase
+          .from('products')
+          .select(`
           *,
           profiles:seller_id (name)
         `)
-        .gt('quantity', 0)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+          .gt('quantity', 0)
+          .order('created_at', { ascending: false });
+        if (res.error) throw res.error;
+        return res;
+      });
 
       let filtered = (data ?? []).map((p: any) => {
         const meta = parseCommerceMeta(p.description);
@@ -60,9 +64,9 @@ export default function Marketplace() {
       }
       setCrops(filtered);
       setFilteredCrops(filtered);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching crops:', error);
-      setFetchError(error.message || 'Failed to load marketplace');
+      setFetchError(friendlyError(error, 'Failed to load marketplace'));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -105,7 +109,7 @@ export default function Marketplace() {
       style={styles.cropCard}
       onPress={() => router.push(`/crop-details?id=${item.id}`)}
     >
-      <Image source={{ uri: getProductImage(item.name) }} style={styles.cropImage} />
+      <Image source={{ uri: getProductImage(item.name) }} style={styles.cropImage} contentFit="cover" transition={200} />
       <View style={styles.cropInfo}>
         <Text style={styles.cropName}>{item.name}</Text>
         <Text style={styles.cropCategory}>{item.crop_type}</Text>
@@ -142,10 +146,7 @@ export default function Marketplace() {
       </View>
 
       {fetchError ? (
-        <View style={styles.errorBanner}>
-          <Ionicons name="alert-circle" size={18} color="#b91c1c" />
-          <Text style={styles.errorText}>{fetchError}</Text>
-        </View>
+        <ErrorBanner message={fetchError} onRetry={() => { setLoading(true); fetchCrops(); }} />
       ) : null}
 
       <View style={styles.searchContainer}>
@@ -188,15 +189,19 @@ export default function Marketplace() {
         data={filteredCrops}
         keyExtractor={(item) => item.id}
         renderItem={renderCropCard}
-        contentContainerStyle={[styles.listContent, { paddingBottom: 100 }]}
+        contentContainerStyle={[styles.listContent, { paddingBottom: TAB_LIST_PADDING }]}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        {...flatListPerfProps}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="leaf-outline" size={64} color="#d1d5db" />
-            <Text style={styles.emptyText}>No crops found</Text>
-          </View>
+          !loading ? (
+            <EmptyState
+              icon="leaf-outline"
+              title="No crops found"
+              subtitle={searchQuery || selectedCategory !== 'All' ? 'Try a different search or filter' : 'Check back soon for new listings'}
+            />
+          ) : null
         }
       />
     </View>

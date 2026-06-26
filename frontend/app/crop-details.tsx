@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   Alert,
   ActivityIndicator,
   TextInput,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { getProductImage } from '../lib/utils';
 import { parseCommerceMeta } from '../lib/commerceMeta';
+import { withRetry, friendlyError } from '../lib/asyncUtils';
+import { ErrorBanner } from '../components/ScreenPrimitives';
 
 function resolveProductId(id: string | string[] | undefined): string | null {
   if (!id) return null;
@@ -30,31 +32,27 @@ export default function CropDetails() {
 
   const [crop, setCrop] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [buying, setBuying] = useState(false);
   const [quantity, setQuantity] = useState('1');
 
-  useEffect(() => {
-    if (productId) fetchCrop();
-    else {
-      setLoading(false);
-      setCrop(null);
-    }
-  }, [productId]);
-
-  const fetchCrop = async () => {
+  const fetchCrop = useCallback(async () => {
     if (!productId) return;
     setLoading(true);
+    setFetchError(null);
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select(`
+      const data = await withRetry(async () => {
+        const { data: row, error } = await supabase
+          .from('products')
+          .select(`
           *,
           profiles:seller_id (name, address)
         `)
-        .eq('id', productId)
-        .single();
-
-      if (error) throw error;
+          .eq('id', productId)
+          .single();
+        if (error) throw error;
+        return row;
+      });
       
       const meta = parseCommerceMeta(data.description);
       const isRelisted = meta?.product_kind === 'trader_relist';
@@ -66,13 +64,23 @@ export default function CropDetails() {
         isRelisted,
         originalFarmerId: meta?.original_farmer_id,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error fetching crop:', error);
-      Alert.alert('Error', 'Product not found');
+      setFetchError(friendlyError(error, 'Product not found'));
+      setCrop(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, [productId]);
+
+  useEffect(() => {
+    if (productId) fetchCrop();
+    else {
+      setLoading(false);
+      setCrop(null);
+      setFetchError('Invalid product link');
+    }
+  }, [productId, fetchCrop]);
 
   const handleBuy = async () => {
     if (!userData) {
@@ -117,9 +125,9 @@ export default function CropDetails() {
               Alert.alert('Success! 🎉', 'Your purchase was successful!', [
                 { text: 'View Orders', onPress: () => router.push(`/${userData.role}/orders` as any) },
               ]);
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error('Buy error:', error);
-              Alert.alert('Error', error.message || 'Failed to place order');
+              Alert.alert('Error', friendlyError(error, 'Failed to place order'));
             } finally {
               setBuying(false);
             }
@@ -140,7 +148,16 @@ export default function CropDetails() {
   if (!crop) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>Product not found</Text>
+        {fetchError ? (
+          <>
+            <ErrorBanner message={fetchError} onRetry={fetchCrop} />
+            <TouchableOpacity style={styles.backLink} onPress={() => router.back()}>
+              <Text style={styles.backLinkText}>Go back</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Text>Product not found</Text>
+        )}
       </View>
     );
   }
@@ -154,7 +171,7 @@ export default function CropDetails() {
         <Ionicons name="arrow-back" size={24} color="#1f2937" />
       </TouchableOpacity>
 
-      <Image source={{ uri: getProductImage(crop.name) }} style={styles.image} />
+      <Image source={{ uri: getProductImage(crop.name) }} style={styles.image} contentFit="cover" transition={200} />
 
       <View style={styles.content}>
         <View style={styles.titleRow}>
@@ -243,7 +260,9 @@ export default function CropDetails() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9fafb' },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+  backLink: { marginTop: 24, padding: 12 },
+  backLinkText: { color: '#16a34a', fontSize: 16, fontWeight: '600' },
   backButton: { position: 'absolute', top: 48, left: 16, zIndex: 10, backgroundColor: '#fff', borderRadius: 20, padding: 8, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
   image: { width: '100%', height: 300, backgroundColor: '#f3f4f6' },
   content: { padding: 20 },

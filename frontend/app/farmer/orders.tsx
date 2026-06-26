@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -24,7 +24,9 @@ import {
   orderItemPrice,
   orderTotal,
 } from '../../lib/orderUtils';
-import { useCallback } from 'react';
+import { withRetry, friendlyError } from '../../lib/asyncUtils';
+import { ErrorBanner, EmptyState } from '../../components/ScreenPrimitives';
+import { flatListPerfProps, TAB_LIST_PADDING } from '../../lib/listConfig';
 
 export default function Orders() {
   const { userData } = useAuth();
@@ -39,17 +41,19 @@ export default function Orders() {
   const [resellPrice, setResellPrice] = useState('');
   const [isReselling, setIsReselling] = useState(false);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     if (!userData) return;
     
     try {
       setFetchError(null);
-      // 1. Get orders where user is the BUYER
-      const { data: buyerOrders, error: buyerErr } = await supabase
-        .from('orders')
-        .select('*, order_items(*)')
-        .eq('buyerId', userData.uid);
-      if (buyerErr) throw buyerErr;
+      const buyerOrders = await withRetry(async () => {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*, order_items(*)')
+          .eq('buyerId', userData.uid);
+        if (error) throw error;
+        return data ?? [];
+      });
       
       // 2. Get orders where user is the SELLER
       let sellerOrders: any[] = [];
@@ -84,19 +88,19 @@ export default function Orders() {
       });
 
       setOrders(allOrders as any);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching orders:', error);
-      setFetchError(error.message || 'Failed to load orders');
+      setFetchError(friendlyError(error, 'Failed to load orders'));
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [userData]);
 
   useFocusEffect(
     useCallback(() => {
       fetchOrders();
-    }, [userData])
+    }, [fetchOrders])
   );
 
   const onRefresh = () => {
@@ -159,8 +163,8 @@ export default function Orders() {
 
       Alert.alert('Success', 'Item successfully listed on the marketplace for resale!');
       setResellModalVisible(false);
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Could not list item.');
+    } catch (error: unknown) {
+      Alert.alert('Error', friendlyError(error, 'Could not list item.'));
     } finally {
       setIsReselling(false);
     }
@@ -231,23 +235,20 @@ export default function Orders() {
       </View>
 
       {fetchError ? (
-        <View style={styles.errorBanner}>
-          <Ionicons name="alert-circle" size={18} color="#b91c1c" />
-          <Text style={styles.errorText}>{fetchError}</Text>
-        </View>
+        <ErrorBanner message={fetchError} onRetry={() => { setLoading(true); fetchOrders(); }} />
       ) : null}
 
       <FlatList
         data={orders}
         keyExtractor={(item: any) => item.id}
         renderItem={renderOrder}
-        contentContainerStyle={[styles.listContent, { paddingBottom: 100 }]}
+        contentContainerStyle={[styles.listContent, { paddingBottom: TAB_LIST_PADDING }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        {...flatListPerfProps}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="receipt-outline" size={64} color="#d1d5db" />
-            <Text style={styles.emptyText}>No orders yet</Text>
-          </View>
+          !fetchError ? (
+            <EmptyState icon="receipt-outline" title="No orders yet" subtitle="Purchases and sales will appear here" />
+          ) : null
         }
       />
 

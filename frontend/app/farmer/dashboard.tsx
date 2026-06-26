@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
@@ -19,6 +20,9 @@ import {
   groupEarningsByMonth,
   sumWalletEarnings,
 } from '../../lib/walletApi';
+import { friendlyError } from '../../lib/asyncUtils';
+import { ErrorBanner } from '../../components/ScreenPrimitives';
+import { TAB_LIST_PADDING } from '../../lib/listConfig';
 
 const { width } = Dimensions.get('window');
 
@@ -28,11 +32,14 @@ export default function FarmerDashboard() {
   const [analytics, setAnalytics] = useState<any>(null);
   const [balance, setBalance] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     if (!userData) return;
     
     try {
+      setFetchError(null);
       const [walletBal, transactions] = await Promise.all([
         fetchWalletBalance(userData.uid),
         fetchWalletHistory(userData.uid),
@@ -66,15 +73,19 @@ export default function FarmerDashboard() {
         bestSellingCrops: mappedCrops,
         transactionCount: transactions.length,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error fetching analytics:', error);
+      setFetchError(friendlyError(error, 'Failed to load dashboard'));
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [userData]);
 
   useFocusEffect(
     useCallback(() => {
+      setLoading(true);
       fetchAnalytics();
-    }, [userData])
+    }, [fetchAnalytics])
   );
 
   const onRefresh = async () => {
@@ -94,22 +105,31 @@ export default function FarmerDashboard() {
       }))
     : [];
 
+  if (loading && !analytics) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#16a34a" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Namaste, {userData?.name}! 👋</Text>
+          <Text style={styles.greeting}>Namaste, {userData?.name ?? 'Farmer'}! 👋</Text>
           <Text style={styles.role}>Farmer Dashboard</Text>
         </View>
       </View>
 
       <ScrollView
         style={styles.content}
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingBottom: TAB_LIST_PADDING }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {fetchError ? <ErrorBanner message={fetchError} onRetry={fetchAnalytics} /> : null}
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
           <View style={[styles.statCard, { backgroundColor: '#16a34a' }]}>
@@ -126,6 +146,15 @@ export default function FarmerDashboard() {
             <Text style={styles.statLabel}>Total Sales</Text>
           </View>
         </View>
+
+        {analytics && chartData.length === 0 && (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Income Trend 📈</Text>
+            <Text style={styles.emptyChartText}>
+              No sales income recorded yet. List crops and complete orders to see trends.
+            </Text>
+          </View>
+        )}
 
         {/* Income Prediction */}
         {analytics && chartData.length > 0 && (
@@ -210,7 +239,7 @@ export default function FarmerDashboard() {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Top Performing Crops 🌟</Text>
             {analytics.bestSellingCrops.map((crop: any, index: number) => (
-              <View key={index} style={styles.cropItem}>
+              <View key={crop.id} style={styles.cropItem}>
                 <View style={styles.cropRank}>
                   <Text style={styles.cropRankText}>{index + 1}</Text>
                 </View>
@@ -232,6 +261,12 @@ export default function FarmerDashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f9fafb',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#f9fafb',
   },
   header: {
@@ -299,6 +334,11 @@ const styles = StyleSheet.create({
     color: '#16a34a',
     fontWeight: '600',
     marginBottom: 16,
+  },
+  emptyChartText: {
+    fontSize: 14,
+    color: '#6b7280',
+    lineHeight: 20,
   },
   actionsContainer: {
     flexDirection: 'row',
