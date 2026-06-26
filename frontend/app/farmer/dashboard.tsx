@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,17 @@ import {
   RefreshControl,
   Dimensions,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { LineChart } from 'react-native-gifted-charts';
 import { Ionicons } from '@expo/vector-icons';
+import { supabase } from '../../lib/supabase';
+import {
+  fetchWalletBalance,
+  fetchWalletHistory,
+  groupEarningsByMonth,
+  sumWalletEarnings,
+} from '../../lib/walletApi';
 
 const { width } = Dimensions.get('window');
 
@@ -19,26 +26,56 @@ export default function FarmerDashboard() {
   const { userData, refreshUserData } = useAuth();
   const router = useRouter();
   const [analytics, setAnalytics] = useState<any>(null);
+  const [balance, setBalance] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchAnalytics = async () => {
     if (!userData) return;
     
     try {
-      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-      const response = await fetch(`${backendUrl}/api/analytics/farmer/${userData.uid}`);
-      if (response.ok) {
-        const data = await response.json();
-        setAnalytics(data);
-      }
+      const [walletBal, transactions] = await Promise.all([
+        fetchWalletBalance(userData.uid),
+        fetchWalletHistory(userData.uid),
+      ]);
+      setBalance(walletBal);
+
+      const monthlyData = groupEarningsByMonth(transactions);
+      const totalEarnings = sumWalletEarnings(transactions);
+      const months = Object.values(monthlyData);
+      const avgMonthly = months.length ? months.reduce((a, b) => a + b, 0) / months.length : 0;
+      
+      // Fetch best selling crops (we can sort by lowest quantity remaining for now as a proxy if we don't have sold_quantity)
+      const { data: bestCrops } = await supabase
+        .from('products')
+        .select('*')
+        .eq('seller_id', userData.uid)
+        .order('quantity', { ascending: true }) // Less quantity left = more sold
+        .limit(5);
+
+      const mappedCrops = (bestCrops || []).map((p: any) => ({
+        ...p,
+        soldQuantity: 0, // Placeholder until orders schema is fully integrated
+        pricePerUnit: p.price_per_unit
+      }));
+      
+      setAnalytics({
+        totalEarnings,
+        monthlyData,
+        avgMonthlyEarnings: avgMonthly,
+        predictedAnnualIncome: avgMonthly * 12,
+        bestSellingCrops: mappedCrops,
+        transactionCount: transactions.length,
+      });
     } catch (error) {
       console.error('Error fetching analytics:', error);
     }
   };
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, [userData]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAnalytics();
+    }, [userData])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -68,15 +105,16 @@ export default function FarmerDashboard() {
 
       <ScrollView
         style={styles.content}
+        contentContainerStyle={{ paddingBottom: 24 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
-          <View style={[styles.statCard, { backgroundColor: '#10b981' }]}>
+          <View style={[styles.statCard, { backgroundColor: '#16a34a' }]}>
             <Ionicons name="cash" size={32} color="#fff" />
-            <Text style={styles.statValue}>{formatCurrency(userData?.walletBalance || 0)}</Text>
+            <Text style={styles.statValue}>{formatCurrency(balance)}</Text>
             <Text style={styles.statLabel}>Wallet Balance</Text>
           </View>
 
@@ -100,19 +138,23 @@ export default function FarmerDashboard() {
               data={chartData}
               width={width - 80}
               height={200}
-              color="#10b981"
+              color="#16a34a"
               thickness={3}
-              dataPointsColor="#10b981"
+              dataPointsColor="#16a34a"
               textColor="#6b7280"
               textFontSize={12}
               yAxisTextStyle={{ color: '#6b7280' }}
               xAxisLabelTextStyle={{ color: '#6b7280' }}
               curved
               areaChart
-              startFillColor="#10b981"
-              endFillColor="#10b98120"
+              startFillColor="#16a34a"
+              endFillColor="#16a34a20"
               startOpacity={0.8}
               endOpacity={0.3}
+              yAxisSide={0}
+              isAnimated
+              animationDuration={1200}
+              initialSpacing={20}
             />
           </View>
         )}
@@ -125,7 +167,7 @@ export default function FarmerDashboard() {
               style={styles.actionButton}
               onPress={() => router.push('/farmer/add-crop')}
             >
-              <View style={[styles.actionIcon, { backgroundColor: '#10b981' }]}>
+              <View style={[styles.actionIcon, { backgroundColor: '#16a34a' }]}>
                 <Ionicons name="add-circle" size={28} color="#fff" />
               </View>
               <Text style={styles.actionText}>Add Crop</Text>
@@ -254,7 +296,7 @@ const styles = StyleSheet.create({
   },
   predictionText: {
     fontSize: 16,
-    color: '#10b981',
+    color: '#16a34a',
     fontWeight: '600',
     marginBottom: 16,
   },
@@ -292,7 +334,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#10b981',
+    backgroundColor: '#16a34a',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,

@@ -16,6 +16,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
+import { supabase } from '../../lib/supabase';
+import { buildFarmerListingMeta } from '../../lib/commerceMeta';
 
 export default function AddCrop() {
   const { userData } = useAuth();
@@ -56,35 +58,32 @@ export default function AddCrop() {
   };
 
   const handleSubmit = async () => {
-    if (!name || !quantity || !price || !category || !imageBase64) {
-      Alert.alert('Error', 'Please fill all required fields and upload an image');
+    if (!name || !quantity || !price || !category) {
+      Alert.alert('Error', 'Please fill all required fields');
+      return;
+    }
+    if (parseFloat(quantity) <= 0 || parseFloat(price) <= 0) {
+      Alert.alert('Error', 'Quantity and price must be greater than zero');
       return;
     }
 
     setLoading(true);
     try {
-      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-      const response = await fetch(`${backendUrl}/api/crops`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          farmerId: userData?.uid,
-          farmerName: userData?.name,
-          name,
-          quantity: parseFloat(quantity),
-          unit,
-          pricePerUnit: parseFloat(price),
-          harvestDate: harvestDate || new Date().toISOString().split('T')[0],
-          description,
-          category,
-          location,
-          imageBase64,
-        }),
+      const description = buildFarmerListingMeta(userData?.uid || '');
+
+      const { error } = await supabase.from('products').insert({
+        seller_id: userData?.uid,
+        name,
+        crop_type: category,
+        quantity: parseFloat(quantity),
+        unit,
+        price_per_unit: parseFloat(price),
+        description,
+        // imageBase64, harvestDate, location are preserved in UI but not stored
+        // to strictly match the website schema and prevent Android-only fields.
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to add crop');
-      }
+      if (error) throw error;
 
       Alert.alert('Success', 'Crop listed successfully!');
       router.back();
@@ -325,7 +324,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   categoryChipSelected: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#16a34a',
   },
   categoryChipText: {
     color: '#6b7280',
@@ -355,7 +354,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   unitOptionSelected: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#16a34a',
   },
   unitText: {
     color: '#6b7280',
@@ -365,7 +364,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   submitButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#16a34a',
     height: 56,
     borderRadius: 12,
     justifyContent: 'center',

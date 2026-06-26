@@ -5,15 +5,24 @@ export default function TraderLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#10b981',
+        tabBarActiveTintColor: '#16a34a',
         tabBarInactiveTintColor: '#9ca3af',
         tabBarStyle: {
           backgroundColor: '#fff',
           borderTopWidth: 1,
           borderTopColor: '#e5e7eb',
-          height: 60,
-          paddingBottom: 8,
+          height: 70,
+          paddingBottom: 16,
           paddingTop: 8,
+          marginBottom: 10,
+          borderRadius: 20,
+          marginHorizontal: 8,
+          position: 'absolute',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
+          elevation: 10,
         },
         headerShown: false,
       }}

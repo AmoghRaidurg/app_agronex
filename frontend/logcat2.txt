@@ -1,0 +1,426 @@
+﻿--------- beginning of main
+06-26 02:53:47.077   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:53:55.014   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:53:58.516   387   387 E android.hardware.power.stats@1.0-service-mock: Failed to getEnergyData
+06-26 02:53:58.941   796   864 D EGL_emulation: app_time_stats: avg=34569.01ms min=34569.01ms max=34569.01ms count=1
+06-26 02:53:59.978  1384  1394 W putmethod.lati: Reducing the number of considered missed Gc histogram windows from 266 to 100
+06-26 02:54:00.023   796   864 D EGL_emulation: app_time_stats: avg=1081.91ms min=1081.91ms max=1081.91ms count=1
+06-26 02:54:01.523  1096  1096 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_DOWN, actionButton=0, id[0]=0, x[0]=224.97803, y[0]=398.9502, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=META_NUM_LOCK_ON, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=24518473, downTime=24518473, deviceId=5, source=0x5002, displayId=0, eventId=68983521 }
+06-26 02:54:01.619  1096  1096 D TaplEvents: Main / Touch event: MotionEvent { action=ACTION_UP, actionButton=0, id[0]=0, x[0]=224.97803, y[0]=398.9502, toolType[0]=TOOL_TYPE_FINGER, buttonState=0, classification=NONE, metaState=META_NUM_LOCK_ON, flags=0x0, edgeFlags=0x0, pointerCount=1, historySize=0, eventTime=24518570, downTime=24518473, deviceId=5, source=0x5002, displayId=0, eventId=1001863682 }
+06-26 02:54:01.639  1096  1614 D EGL_emulation: app_time_stats: avg=5298.37ms min=5.30ms max=37029.69ms count=7
+06-26 02:54:01.640  1096  1096 D TaplEvents: Main / start: startAppShortcutOrInfoActivity
+--------- beginning of system
+06-26 02:54:01.642   575   935 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.agronex.farmconnect/.MainActivity bnds=[57,273][298,609]} from uid 10133
+06-26 02:54:01.642   575   935 W ActivityTaskManager: Can't find TaskDisplayArea to determine support for multi window. Task id=104 attached=false
+06-26 02:54:01.645   796   855 D PhoneStartingWindowTypeAlgorithm: preferredStartingWindowType newTask:true taskSwitch:true processRunning:false allowTaskSnapshot:true activityCreated:false useEmptySplashScreen:false legacySplashScreen:false topIsHome:false
+06-26 02:54:01.645   796   855 D StartingSurfaceDrawer: addSplashScreen com.agronex.farmconnect theme=7f120223 task=104 suggestType=1
+06-26 02:54:01.646   796   855 D StartingSurfaceDrawer: addSplashScreen: creating context based on task Configuration {1.0 310mcc260mnc [en_US] ldltr sw411dp w411dp h842dp 420dpi nrml long port finger qwerty/v/v dpad/v winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2274) mMaxBounds=Rect(0, 0 - 1080, 2400) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} s.1 fontWeightAdjustment=0} for splash screen
+06-26 02:54:01.646   796   855 D StartingSurfaceDrawer: addSplashScreen: apply overrideConfig{1.0 310mcc260mnc [en_US] ldltr sw411dp w411dp h842dp 420dpi nrml long port finger qwerty/v/v dpad/v winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2274) mMaxBounds=Rect(0, 0 - 1080, 2400) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} s.1 fontWeightAdjustment=0} to starting window resId=17170463
+06-26 02:54:01.646   425   535 D AudioFlinger: mixer(0x7ea967763a70) throttle end: throttle time(11)
+06-26 02:54:01.647   796   856 D StartingSurfaceDrawer: window attributes color: ff16a34a icon android.graphics.drawable.BitmapDrawable@8c8af20 duration 0 brandImage null
+06-26 02:54:01.647   796   856 D SplashScreenView: Build android.window.SplashScreenView{23797f V.E...... ......ID 0,0-0,0}
+06-26 02:54:01.647   796   856 D SplashScreenView: Icon: view: android.widget.ImageView{5599d4c V.ED..... ......I. 0,0-0,0 #10204a7 android:id/splashscreen_icon_view} drawable: com.android.wm.shell.startingsurface.SplashscreenIconDrawableFactory$ImmobileIconDrawable@9dd5195 size: 504
+06-26 02:54:01.647   796   856 D SplashScreenView: Branding: view: android.view.View{5552aa G.ED..... ......I. 0,0-0,0 #10204a6 android:id/splashscreen_branding_view} drawable: null size w: 0 h: 0
+06-26 02:54:01.647   796   856 D StartingSurfaceDrawer: fillViewWithIcon surfaceWindowView android.window.SplashScreenView{23797f V.E...... ......ID 0,0-0,0}
+06-26 02:54:01.652   575   612 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10157; state: DISABLED
+06-26 02:54:01.653   575   632 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10157; state: ENABLED
+06-26 02:54:01.660   345   345 D Zygote  : Forked child process 7970
+06-26 02:54:01.664   366  1303 D goldfish-address-space: claimShared: Ask to claim region [0x3e8000000 0x3e89e4000]
+06-26 02:54:01.665  7970  7970 W nex.farmconnec: Unexpected CPU variant for X86 using defaults: x86_64
+06-26 02:54:01.670   575   632 I ActivityManager: Start proc 7970:com.agronex.farmconnect/u0a157 for pre-top-activity {com.agronex.farmconnect/com.agronex.farmconnect.MainActivity}
+06-26 02:54:01.697   366  1303 D goldfish-address-space: claimShared: Ask to claim region [0x3e89e4000 0x3e93c8000]
+06-26 02:54:01.700   447   467 I adbd    : jdwp connection from 7970
+06-26 02:54:01.724   366   366 D goldfish-address-space: claimShared: Ask to claim region [0x3e93c8000 0x3e9dac000]
+06-26 02:54:01.756  1506  1506 I GsaVoiceInteractionSrv: Handling ACTION_STOP_HOTWORD
+06-26 02:54:01.759  1506  1506 E HwDetectorWithState: a: 3
+06-26 02:54:01.778  7970  7970 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10157; state: ENABLED
+06-26 02:54:01.800  7970  7970 V GraphicsEnvironment: ANGLE Developer option for 'com.agronex.farmconnect' set to: 'default'
+06-26 02:54:01.801  7970  7970 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+06-26 02:54:01.804  7970  7970 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-26 02:54:01.804  7970  7970 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-26 02:54:01.869  7970  7970 W SoLoader: Initializing SoLoader: 0
+06-26 02:54:01.869  7970  7970 W SoLoader: Recording new base apk path: /data/app/~~5UVLHG_Y_5q3kH2-4p0HLQ==/com.agronex.farmconnect-Ph3yUCELE6WLj8e_utthnQ==/base.apk
+06-26 02:54:01.869  7970  7970 W SoLoader: Previously recorded 0 base apk paths.
+06-26 02:54:01.870  7970  7970 I SoLoader: Preparing SO source: DirectorySoSource[root = /vendor/lib64 flags = 2]
+06-26 02:54:01.871  7970  7970 I SoLoader: Preparing SO source: DirectorySoSource[root = /system/lib64 flags = 2]
+06-26 02:54:01.871  7970  7970 I SoLoader: Preparing SO source: DirectApkSoSource[root = [/data/app/~~5UVLHG_Y_5q3kH2-4p0HLQ==/com.agronex.farmconnect-Ph3yUCELE6WLj8e_utthnQ==/base.apk!/lib/x86_64]]
+06-26 02:54:01.871   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:01.872   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:01.879  7970  7970 I SoLoader: Preparing SO source: ApplicationSoSource[DirectorySoSource[root = /data/app/~~5UVLHG_Y_5q3kH2-4p0HLQ==/com.agronex.farmconnect-Ph3yUCELE6WLj8e_utthnQ==/lib/x86_64 flags = 0]]
+06-26 02:54:01.880  7970  7970 I SoLoader: init finish: 4 SO sources prepared
+06-26 02:54:01.881  7970  7970 W SoLoader: SoLoader initialized: 8
+06-26 02:54:01.888   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:01.892   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:01.900  7970  7970 D jni_lib_merge: Entering merged library JNI_OnLoad.
+06-26 02:54:01.900  7970  7970 D jni_lib_merge: Preparing 12 pre-merged libs (including stub)
+06-26 02:54:01.900  7970  7970 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7bc77e6b1ba0
+06-26 02:54:01.901  7970  7970 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7bc77e78d530
+06-26 02:54:01.901  7970  7970 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7bc77e7a00a0
+06-26 02:54:01.901  7970  7970 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7bc77e7c6fa0
+06-26 02:54:01.901  7970  7970 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7bc77e86ea50
+06-26 02:54:01.901  7970  7970 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7bc77e8898c0
+06-26 02:54:01.901  7970  7970 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7bc77e890150
+06-26 02:54:01.901  7970  7970 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7bc77e8ae450
+06-26 02:54:01.902  7970  7970 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7bc77e959b80
+06-26 02:54:01.902  7970  7970 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7bc77e961ab0
+06-26 02:54:01.902  7970  7970 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7bc77e969130
+06-26 02:54:01.902  7970  7970 D jni_lib_merge: About to register 11 actual methods.
+06-26 02:54:01.905   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:01.908   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:01.909  7970  7970 D jni_lib_merge: Entering merged library JNI_OnLoad.
+06-26 02:54:01.909  7970  7970 D jni_lib_merge: Preparing 12 pre-merged libs (including stub)
+06-26 02:54:01.909  7970  7970 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7bc77e6b1ba0
+06-26 02:54:01.910  7970  7970 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7bc77e78d530
+06-26 02:54:01.910  7970  7970 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7bc77e7a00a0
+06-26 02:54:01.910  7970  7970 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7bc77e7c6fa0
+06-26 02:54:01.910  7970  7970 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7bc77e86ea50
+06-26 02:54:01.910  7970  7970 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7bc77e8898c0
+06-26 02:54:01.911  7970  7970 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7bc77e890150
+06-26 02:54:01.911  7970  7970 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7bc77e8ae450
+06-26 02:54:01.911  7970  7970 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7bc77e959b80
+06-26 02:54:01.911  7970  7970 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7bc77e961ab0
+06-26 02:54:01.911  7970  7970 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7bc77e969130
+06-26 02:54:01.911  7970  7970 D jni_lib_merge: About to register 11 actual methods.
+06-26 02:54:01.915  7970  7970 D jni_lib_merge: Entering merged library JNI_OnLoad.
+06-26 02:54:01.916  7970  7970 D jni_lib_merge: Preparing 12 pre-merged libs (including stub)
+06-26 02:54:01.916  7970  7970 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7bc77e6b1ba0
+06-26 02:54:01.916  7970  7970 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7bc77e78d530
+06-26 02:54:01.916  7970  7970 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7bc77e7a00a0
+06-26 02:54:01.917  7970  7970 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7bc77e7c6fa0
+06-26 02:54:01.917  7970  7970 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7bc77e86ea50
+06-26 02:54:01.917  7970  7970 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7bc77e8898c0
+06-26 02:54:01.918  7970  7970 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7bc77e890150
+06-26 02:54:01.918  7970  7970 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7bc77e8ae450
+06-26 02:54:01.918  7970  7970 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7bc77e959b80
+06-26 02:54:01.918  7970  7970 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7bc77e961ab0
+06-26 02:54:01.919  7970  7970 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7bc77e969130
+06-26 02:54:01.919  7970  7970 D jni_lib_merge: About to register 11 actual methods.
+06-26 02:54:01.922   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:01.924   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:01.938   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:01.941   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:01.948  7970  7991 D libEGL  : loaded /vendor/lib64/egl/libEGL_emulation.so
+06-26 02:54:01.952  7970  7991 D libEGL  : loaded /vendor/lib64/egl/libGLESv1_CM_emulation.so
+06-26 02:54:01.954   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:01.957   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:01.961  7970  7991 D libEGL  : loaded /vendor/lib64/egl/libGLESv2_emulation.so
+06-26 02:54:01.962  7970  7970 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+06-26 02:54:01.972   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:01.975   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:01.989   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:01.991   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.005   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.011   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.021   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.024   796   864 D EGL_emulation: app_time_stats: avg=2000.54ms min=2000.54ms max=2000.54ms count=1
+06-26 02:54:02.026   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.035   796   864 D EGL_emulation: app_time_stats: avg=5378.73ms min=15.42ms max=37487.96ms count=7
+06-26 02:54:02.039   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.041   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.055   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.060   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.063  7970  7970 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Schedule
+06-26 02:54:02.063  7970  7970 W unknown:BridgelessReact: ReactHost{0}.attachSurface(surfaceId = 0)
+06-26 02:54:02.064  7970  7994 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask()
+06-26 02:54:02.065  7970  7994 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Start
+06-26 02:54:02.065  7970  7994 W unknown:BridgelessReact: ReactHost{0}.getJSBundleLoader()
+06-26 02:54:02.066  7970  7994 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactContext(): Creating BridgelessReactContext
+06-26 02:54:02.067  7970  7994 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating ReactInstance
+06-26 02:54:02.071   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.074   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.079  7970  7970 W unknown:BridgelessReact: ReactHost{0}.onHostResume(activity)
+06-26 02:54:02.079  7970  7970 W unknown:BridgelessReact: ReactContext.onHostResume()
+06-26 02:54:02.088   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.091   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.099  7970  7994 D jni_lib_merge: Entering merged library JNI_OnLoad.
+06-26 02:54:02.099  7970  7994 D jni_lib_merge: Preparing 4 pre-merged libs (including stub)
+06-26 02:54:02.099  7970  7994 D jni_lib_merge: Preparing to register libhermes_executor_so.  onload_func: 0x7bc77a91e730
+06-26 02:54:02.099  7970  7994 D jni_lib_merge: Preparing to register libhermesinstancejni_so.  onload_func: 0x7bc77a925db0
+06-26 02:54:02.100  7970  7994 D jni_lib_merge: Preparing to register libjsijniprofiler_so.  onload_func: 0x7bc77a926540
+06-26 02:54:02.100  7970  7994 D jni_lib_merge: About to register 3 actual methods.
+06-26 02:54:02.106   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.110   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.123   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.127   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.129  7970  7989 D HostConnection: createUnique: call
+06-26 02:54:02.138  7970  7989 D HostConnection: HostConnection::get() New Host Connection established 0x7bc88a8f8190, tid 7989
+06-26 02:54:02.140   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.146  7970  7989 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_with_commands ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_1 
+06-26 02:54:02.150   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.152   203   203 I hwservicemanager: getTransport: Cannot find entry android.hardware.configstore@1.0::ISurfaceFlingerConfigs/default in either framework or device VINTF manifest.
+06-26 02:54:02.154   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.155  7970  7989 W OpenGLRenderer: Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+06-26 02:54:02.156  7970  7989 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+06-26 02:54:02.175  7970  7989 D EGL_emulation: eglCreateContext: 0x7bc88a8f7ad0: maj 3 min 1 rcv 4
+06-26 02:54:02.176   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.179   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.187  7970  7989 D EGL_emulation: eglMakeCurrent: 0x7bc88a8f7ad0: ver 3 1 (tinfo 0x7bcaa791d080) (first time)
+06-26 02:54:02.194   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.198   430   514 E HWComposer: getSupportedContentTypes: getSupportedContentTypes failed for display 4619827259835644672: Unsupported (8)
+06-26 02:54:02.200   203   203 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device VINTF manifest.
+06-26 02:54:02.200  7970  7989 I Gralloc4: mapper 4.x is not supported
+06-26 02:54:02.201  7970  7989 D HostConnection: createUnique: call
+06-26 02:54:02.202  7970  7989 D HostConnection: HostConnection::get() New Host Connection established 0x7bc88a8fb610, tid 7989
+06-26 02:54:02.202  7970  7989 D goldfish-address-space: allocate: Ask for block of size 0x100
+06-26 02:54:02.203  7970  7989 D goldfish-address-space: allocate: ioctl allocate returned offset 0x3e3ffe000 size 0x2000
+06-26 02:54:02.204   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.207   203   203 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.allocator@4.0::IAllocator/default in either framework or device VINTF manifest.
+06-26 02:54:02.207  7970  7989 W Gralloc4: allocator 4.x is not supported
+06-26 02:54:02.218   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.220   367   367 W RanchuHwc: validateDisplay: layer 73 CompositionType 1, fallback
+06-26 02:54:02.231   366   366 D goldfish-address-space: claimShared: Ask to claim region [0x3e9dac000 0x3ea790000]
+06-26 02:54:02.231   367   367 W RanchuHwc: presentDisplay display has no layers to compose, flushing client target buffer.
+06-26 02:54:02.271  7970  7989 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_native_sync_v3 ANDROID_EMU_native_sync_v4 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_with_commands ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_1 
+06-26 02:54:02.280   366   366 D goldfish-address-space: claimShared: Ask to claim region [0x3ec000000 0x3ec9e4000]
+06-26 02:54:02.296   575   935 W ActivityManager: Unable to start service Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } U=0: not found
+06-26 02:54:02.297   575   935 W RemoteSmartspaceService: could not bind to Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } using flags 67112961
+06-26 02:54:02.297   575   575 W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@18b61e1
+06-26 02:54:02.304   366   366 D goldfish-address-space: claimShared: Ask to claim region [0x3e6de4000 0x3e77c8000]
+06-26 02:54:02.308  7970  7994 I ExpoModulesCore: Γ£à AppContext was initialized
+06-26 02:54:02.370  7970  7994 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Loading JS Bundle
+06-26 02:54:02.372  7970  7994 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Calling DevSupportManagerBase.onNewReactContextCreated(reactContext)
+06-26 02:54:02.373  7970  7994 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Execute
+06-26 02:54:02.390  7970  7970 W unknown:BridgelessReact: ReactContext.onHostResume()
+06-26 02:54:02.391  7970  7970 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Executing ReactInstanceEventListeners
+06-26 02:54:02.453  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaProviderManager
+06-26 02:54:02.459  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.uimanager.LayoutShadowNode
+06-26 02:54:02.461  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.SearchBarManager
+06-26 02:54:02.462  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenFooterManager
+06-26 02:54:02.464  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.TabScreenViewManager
+06-26 02:54:02.467  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.GroupViewManagerWrapper
+06-26 02:54:02.468  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContainerViewManager
+06-26 02:54:02.471  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.TabsHostViewManager
+06-26 02:54:02.474  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.reactnativecommunity.webview.RNCWebViewManager
+06-26 02:54:02.475  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ModalScreenViewManager
+06-26 02:54:02.477  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderConfigViewManager
+06-26 02:54:02.478  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContentWrapperManager
+06-26 02:54:02.478  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewManager
+06-26 02:54:02.480  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewShadowNode
+06-26 02:54:02.481  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenViewManager
+06-26 02:54:02.481  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.SimpleViewManagerWrapper
+06-26 02:54:02.482  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderSubviewManager
+06-26 02:54:02.483  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackViewManager
+06-26 02:54:02.505  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$DefsViewManager
+06-26 02:54:02.507  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.VirtualViewManager$RenderableShadowNode
+06-26 02:54:02.509  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeMergeManager
+06-26 02:54:02.513  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
+06-26 02:54:02.513  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.safeareaview.ReactSafeAreaViewShadowNode
+06-26 02:54:02.515  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$LinearGradientManager
+06-26 02:54:02.519  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeGaussianBlurManager
+06-26 02:54:02.523  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.progressbar.ReactProgressBarViewManager
+06-26 02:54:02.525  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.progressbar.ProgressBarShadowNode
+06-26 02:54:02.527  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+06-26 02:54:02.531  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactTextViewManager
+06-26 02:54:02.534  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactTextShadowNode
+06-26 02:54:02.538  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeColorMatrixManager
+06-26 02:54:02.542  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
+06-26 02:54:02.544  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$ClipPathViewManager
+06-26 02:54:02.547  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$SymbolManager
+06-26 02:54:02.550  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$PatternManager
+06-26 02:54:02.555  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeBlendManager
+06-26 02:54:02.558  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.view.ReactViewManager
+06-26 02:54:02.560  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.SvgViewManager
+06-26 02:54:02.562  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.switchview.ReactSwitchManager
+06-26 02:54:02.564  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.switchview.ReactSwitchShadowNode
+06-26 02:54:02.567  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$UseViewManager
+06-26 02:54:02.571  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$CircleViewManager
+06-26 02:54:02.574  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$TSpanViewManager
+06-26 02:54:02.577  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FilterManager
+06-26 02:54:02.579  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$MarkerManager
+06-26 02:54:02.583  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager
+06-26 02:54:02.587  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.modal.ReactModalHostManager
+06-26 02:54:02.591  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$ForeignObjectManager
+06-26 02:54:02.593  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$EllipseViewManager
+06-26 02:54:02.595  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$LineViewManager
+06-26 02:54:02.597  1192  2312 I FontLog : Received query Noto Color Emoji Compat, URI content://com.google.android.gms.fonts [CONTEXT service_id=132 ]
+06-26 02:54:02.598  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager
+06-26 02:54:02.598  1192  2312 I FontLog : Query [emojicompat-emoji-font] resolved to {Noto Color Emoji Compat, wdth 100.0, wght 400, ital 0.0, bestEffort false} [CONTEXT service_id=132 ]
+06-26 02:54:02.598  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageShadowNode
+06-26 02:54:02.601  1192  2312 I FontLog : Fetch {Noto Color Emoji Compat, wdth 100.0, wght 400, ital 0.0, bestEffort false} end status Status{statusCode=SUCCESS, resolution=null} [CONTEXT service_id=132 ]
+06-26 02:54:02.603  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeFloodManager
+06-26 02:54:02.609  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$GroupViewManager
+06-26 02:54:02.610  1192  2312 I FontLog : Pulling font file for id = 31, cache size = 6 [CONTEXT service_id=132 ]
+06-26 02:54:02.612  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$TextViewManager
+06-26 02:54:02.615  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$ImageViewManager
+06-26 02:54:02.618  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeCompositeManager
+06-26 02:54:02.619  1192  2312 I FontLog : Pulling font file for id = 31, cache size = 6 [CONTEXT service_id=132 ]
+06-26 02:54:02.622  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.image.ReactImageManager
+06-26 02:54:02.626  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$RadialGradientManager
+06-26 02:54:02.631  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$MaskManager
+06-26 02:54:02.638  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
+06-26 02:54:02.641  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$RectViewManager
+06-26 02:54:02.644  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$TextPathViewManager
+06-26 02:54:02.651  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactScrollViewManager
+06-26 02:54:02.656  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeOffsetManager
+06-26 02:54:02.659  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$PathViewManager
+06-26 02:54:02.661  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.drawer.ReactDrawerLayoutManager
+06-26 02:54:02.664  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactVirtualTextViewManager
+06-26 02:54:02.664  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactVirtualTextShadowNode
+06-26 02:54:02.667  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
+06-26 02:54:02.671  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactRawTextManager
+06-26 02:54:02.671  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactRawTextShadowNode
+06-26 02:54:02.674  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.textinput.ReactTextInputManager
+06-26 02:54:02.676  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.textinput.ReactTextInputShadowNode
+06-26 02:54:02.679  7970  7995 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.gesturehandler.react.RNGestureHandlerRootViewManager
+06-26 02:54:02.689  7970  7995 W BridgelessReactContext: [WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of the new architecture is not encouraged usage.
+06-26 02:54:02.697  7970  7995 I ExpoModulesCore: Γ£à JSI interop was installed
+06-26 02:54:02.701  7970  7995 I ExpoModulesCore: Γ£à Constants were exported
+06-26 02:54:02.745  7970  7995 I ReactNativeJS: Running "main"
+06-26 02:54:02.749  7970  7995 V AsyncStorageExpoMigration: No scoped database found
+06-26 02:54:02.760  7970  7995 E ReactNativeJS: [Error: supabaseUrl is required.]
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: ReactHost{0}.handleHostException(message = "Error: supabaseUrl is required., stack:
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: validateSupabaseUrl@1:1148962
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: SupabaseClient@1:1150459
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: createClient@1:1152846
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: anonymous@1:1146529
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: loadModuleImplementation@1:41707
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: guardedLoadModule@1:41230
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: metroRequire@1:40740
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: anonymous@1:1138768
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: loadModuleImplementation@1:41707
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: guardedLoadModule@1:41230
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: metroRequire@1:40740
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: anonymous@1:801747
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: loadModuleImplementation@1:41707
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: guardedLoadModule@1:41186
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: metroRequire@1:40740
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: get@1:800702
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: metroContext@1:800677
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: loadRoute@1:1096312
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: getLayoutNode@1:1098456
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: _loop3@1:1096205
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: getDirectoryTree@1:1093986
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: getRoutes@1:1092971
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: getRoutes@1:1091967
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: useStore@1:1063560
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: ContextNavigator@1:1130360
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: renderWithHooks@1:229516
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: updateFunctionComponent@1:248287
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: beginWork@1:256122
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: performUnitOfWork@1:274771
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: workLoopSync@1:273779
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: renderRootSync@1:273611
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: performWorkOnRoot@1:271037
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: performWorkOnRootViaSchedulerTask@1:224976
+06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: ")
+--------- beginning of crash
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: FATAL EXCEPTION: mqt_v_native
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: Process: com.agronex.farmconnect, PID: 7970
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: com.facebook.react.common.JavascriptException: Error: supabaseUrl is required., stack:
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: validateSupabaseUrl@1:1148962
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: SupabaseClient@1:1150459
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: createClient@1:1152846
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: anonymous@1:1146529
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: loadModuleImplementation@1:41707
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: guardedLoadModule@1:41230
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: metroRequire@1:40740
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: anonymous@1:1138768
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: loadModuleImplementation@1:41707
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: guardedLoadModule@1:41230
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: metroRequire@1:40740
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: anonymous@1:801747
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: loadModuleImplementation@1:41707
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: guardedLoadModule@1:41186
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: metroRequire@1:40740
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: get@1:800702
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: metroContext@1:800677
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: loadRoute@1:1096312
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: getLayoutNode@1:1098456
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: _loop3@1:1096205
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: getDirectoryTree@1:1093986
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: getRoutes@1:1092971
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: getRoutes@1:1091967
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: useStore@1:1063560
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: ContextNavigator@1:1130360
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: renderWithHooks@1:229516
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: updateFunctionComponent@1:248287
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: beginWork@1:256122
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: performUnitOfWork@1:274771
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: workLoopSync@1:273779
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: renderRootSync@1:273611
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: performWorkOnRoot@1:271037
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: performWorkOnRootViaSchedulerTask@1:224976
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at com.facebook.react.modules.core.ExceptionsManagerModule.reportException(ExceptionsManagerModule.kt:52)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at com.facebook.jni.NativeRunnable.run(Native Method)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at android.os.Handler.handleCallback(Handler.java:938)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:99)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at com.facebook.react.bridge.queue.MessageQueueThreadHandler.dispatchMessage(MessageQueueThreadHandler.kt:21)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:201)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:288)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.startNewBackgroundThread$lambda$1(MessageQueueThreadImpl.kt:175)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion.$r8$lambda$ldnZnqelhYFctGaUKkOKYj5rxo4(Unknown Source:0)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at com.facebook.react.bridge.queue.MessageQueueThreadImpl$Companion$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at java.lang.Thread.run(Thread.java:920)
+06-26 02:54:02.775   575  8009 I DropBoxManagerService: add tag=data_app_crash isTagEnabled=true flags=0x2
+06-26 02:54:02.777   575  4121 W ActivityTaskManager:   Force finishing activity com.agronex.farmconnect/.MainActivity
+06-26 02:54:02.781  7970  7995 E ReactNativeJS: [Error: supabaseUrl is required.]
+06-26 02:54:02.786  7970  7995 E ReactNativeJS: [Error: supabaseUrl is required.]
+06-26 02:54:02.788   366   366 D goldfish-address-space: claimShared: Ask to claim region [0x3e77c8000 0x3e7e1c000]
+06-26 02:54:02.789  7970  7995 E ReactNativeJS: [Error: supabaseUrl is required.]
+06-26 02:54:02.792  7970  7995 E ReactNativeJS: { [TypeError: Cannot read property 'ErrorBoundary' of undefined]
+06-26 02:54:02.792  7970  7995 E ReactNativeJS:   componentStack: '\n    at ContextNavigator (address at index.android.bundle:1:1130207)\n    at ExpoRoot (address at index.android.bundle:1:1129851)\n    at App (<anonymous>)\n    at RCTView (<anonymous>)\n    at View (address at index.android.bundle:1:470561)\n    at AppContainer (address at index.android.bundle:1:469890)',
+06-26 02:54:02.792  7970  7995 E ReactNativeJS:   isComponentError: true }
+06-26 02:54:02.844  7970  7996 I Process : Sending signal. PID: 7970 SIG: 9
+06-26 02:54:02.852   575   631 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.stats.service.DropBoxEntryAddedReceiver
+06-26 02:54:02.854   575   631 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+--------- beginning of kernel
+06-26 02:54:02.856     0     0 I binder  : undelivered TRANSACTION_COMPLETE
+06-26 02:54:02.857     0     0 I binder  : undelivered transaction 634212, process died.
+06-26 02:54:02.881   575  1583 I WindowManager: WIN DEATH: Window{edbc8d7 u0 com.agronex.farmconnect/com.agronex.farmconnect.MainActivity}
+06-26 02:54:02.883   345   345 I Zygote  : Process 7970 exited due to signal 9 (Killed)
+06-26 02:54:02.884   575  1583 W InputManager-JNI: Input channel object 'edbc8d7 com.agronex.farmconnect/com.agronex.farmconnect.MainActivity (client)' was disposed without first being removed with the input manager!
+06-26 02:54:02.885   575   633 I libprocessgroup: Successfully killed process cgroup uid 10157 pid 7970 in 0ms
+06-26 02:54:02.888   575  4664 I ActivityManager: Process com.agronex.farmconnect (pid 7970) has died: fg  TOP 
+06-26 02:54:02.907   575  4664 W InputManager-JNI: Input channel object '457c1da Splash Screen com.agronex.farmconnect (client)' was disposed without first being removed with the input manager!
+06-26 02:54:02.926   796   855 V StartingSurfaceDrawer: Copying splash screen window view for task: 104 parcelable: android.window.SplashScreenView$SplashScreenViewParcelable@c291977
+06-26 02:54:02.927   575  4664 W ActivityTaskManager: Can't find TaskDisplayArea to determine support for multi window. Task id=104 attached=false
+06-26 02:54:02.928   575  4664 W ActivityTaskManager: Can't find TaskDisplayArea to determine support for multi window. Task id=104 attached=false
+06-26 02:54:02.942   366   366 D goldfish-address-space: claimShared: Ask to claim region [0x3e5a1c000 0x3e6400000]
+06-26 02:54:02.946   575   612 W ActivityManager: setHasOverlayUi called on unknown pid: 7970
+06-26 02:54:02.950   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:54:02.955   575  2873 W ActivityManager: Unable to start service Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } U=0: not found
+06-26 02:54:02.955   575  2873 W RemoteSmartspaceService: could not bind to Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } using flags 67112961
+06-26 02:54:02.962   575   575 W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@80fd89a
+06-26 02:54:02.966   366  1303 D goldfish-address-space: claimShared: Ask to claim region [0x3e6de4000 0x3e77c8000]
+06-26 02:54:03.006   366  1303 D goldfish-address-space: claimShared: Ask to claim region [0x3e9dac000 0x3ea790000]
+06-26 02:54:03.027   366   366 D goldfish-address-space: claimShared: Ask to claim region [0x3ea790000 0x3eb174000]
+06-26 02:54:03.041   796   864 D EGL_emulation: app_time_stats: avg=17.81ms min=3.51ms max=94.62ms count=42
+06-26 02:54:03.055   575   601 W ActivityManager: Unable to start service Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } U=0: not found
+06-26 02:54:03.060   366  1303 D goldfish-address-space: claimShared: Ask to claim region [0x3ec000000 0x3ec9e4000]
+06-26 02:54:03.061   575   601 W RemoteSmartspaceService: could not bind to Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } using flags 67112961
+06-26 02:54:03.062   575   575 W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@7b64c1
+06-26 02:54:03.095   366  1303 D goldfish-address-space: claimShared: Ask to claim region [0x3e5038000 0x3e5a1c000]
+06-26 02:54:03.110  1506  1506 I GsaVoiceInteractionSrv: Handling ACTION_START_HOTWORD
+06-26 02:54:03.110  1506  1506 I GsaVoiceInteractionSrv: disregardVoiceMatch: false
+06-26 02:54:03.110  1506  1506 I GsaVoiceInteractionSrv: Cannot start hotword, hotword has been explicitly disabled.
+06-26 02:54:03.125  1664  1682 I OpenGLRenderer: Davey! duration=104063ms; Flags=1, FrameTimelineVsyncId=13876, IntendedVsync=24415954075698, Vsync=24415954075698, InputEventId=1725356703, HandleInputStart=24415955078200, AnimationStart=24415955101300, PerformTraversalsStart=24415955183000, DrawStart=24416019454000, FrameDeadline=24415987409030, FrameInterval=24415955039700, FrameStartTime=16666666, SyncQueued=24416020251800, SyncStart=24416030808200, IssueDrawCommandsStart=24416031420300, SwapBuffers=24416031828000, FrameCompleted=24520027833600, DequeueBufferDuration=48365100, QueueBufferDuration=2055800, GpuCompleted=24520027833600, SwapBuffersCompleted=24416084300500, DisplayPresentTime=0, 
+06-26 02:54:03.142  1384  1384 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3420 
+06-26 02:54:03.143  1384  1384 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():2002 
+06-26 02:54:03.145  1384  1384 I DeviceUnlockedTag: DeviceUnlockedTag.notifyDeviceLockStatusChanged():31 Notify device unlocked.
+06-26 02:54:03.178   796   864 D EGL_emulation: app_time_stats: avg=192.04ms min=17.21ms max=902.02ms count=6
+06-26 02:54:04.890   575   612 W ActivityTaskManager: Activity transferring splash screen timeout for ActivityRecord{e60ccfc u0 com.agronex.farmconnect/.MainActivity t-1 f}} state 1
+06-26 02:54:06.629     0     0 I logd    : logdr: UID=2000 GID=2000 PID=8017 n tail=0 logMask=99 pid=0 start=0ns deadline=0ns
+06-26 02:54:10.885   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:54:19.077   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:54:24.952  1384  8020 D androidtc: Initializing SystemTextClassifier, type = System
+06-26 02:54:27.013   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:54:34.949   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:54:38.938   796   864 D EGL_emulation: app_time_stats: avg=5959.03ms min=13.78ms max=35631.74ms count=6
+06-26 02:54:42.885   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:54:51.078   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:54:59.015   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:55:00.022   796   864 D EGL_emulation: app_time_stats: avg=21083.31ms min=21083.31ms max=21083.31ms count=1
+06-26 02:55:06.129  1192  7054 I AlarmManager: setExactAndAllowWhileIdle [name: GCM_HB_ALARM type: 2 triggerAtMillis: 25623081]
+06-26 02:55:06.131  1192  7054 E GmsTaskScheduler: sendWakeUpEvent called on SchedulerClientBroadcastStrategy
+06-26 02:55:06.131  1192  7054 E GmsTaskScheduler: sendWakeUpEvent called on SchedulerClientBroadcastStrategy
+06-26 02:55:06.131  1192  7054 I AlarmManager: setExactAndAllowWhileIdle [name: GCM_HB_ALARM type: 2 triggerAtMillis: 25623083]
+06-26 02:55:06.950   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:55:07.688     0     0 I logd    : logdr: UID=2000 GID=2000 PID=8021 n tail=0 logMask=99 pid=0 start=0ns deadline=0ns
+06-26 02:55:14.885   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:55:23.058  1096  1614 D EGL_emulation: app_time_stats: avg=8884.39ms min=5.54ms max=79768.28ms count=9
+06-26 02:55:23.077   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:55:31.014   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:55:34.791     0     0 W healthd : battery l=100 v=5000 t=25.0 h=2 st=4 c=900000 fc=300000 cc=10 chg=
+06-26 02:55:38.949   772   772 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+06-26 02:55:39.224     0     0 I logd    : logdr: UID=2000 GID=2000 PID=8024 n tail=0 logMask=99 pid=0 start=0ns deadline=0ns

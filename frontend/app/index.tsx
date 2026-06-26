@@ -1,19 +1,18 @@
 import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
-function AppContent() {
+export default function Index() {
   const { user, userData, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.replace('/auth/phone');
-      } else if (!userData) {
-        router.replace('/auth/complete-profile');
-      } else {
+    if (!loading && !user) {
+      router.replace('/auth/login');
+      return;
+    }
+    if (!loading && user && userData) {
         // Route to role-specific dashboard
         switch (userData.role) {
           case 'farmer':
@@ -32,31 +31,22 @@ function AppContent() {
             router.replace('/admin/dashboard');
             break;
           default:
-            router.replace('/auth/phone');
+            router.replace('/auth/login');
         }
-      }
     }
   }, [user, userData, loading]);
 
-  if (loading) {
+  if (loading || (user && !userData)) {
     return (
       <View style={styles.container}>
-        <Text style={styles.logo}>AGRONEX</Text>
-        <ActivityIndicator size="large" color="#10b981" />
+        <Text style={styles.logo}>AgroElevate</Text>
+        <ActivityIndicator size="large" color="#16a34a" />
         <Text style={styles.tagline}>Connecting Farmers to Markets</Text>
       </View>
     );
   }
 
   return null;
-}
-
-export default function Index() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  );
 }
 
 const styles = StyleSheet.create({
@@ -69,7 +59,7 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: '#10b981',
+    color: '#16a34a',
     marginBottom: 24,
   },
   tagline: {

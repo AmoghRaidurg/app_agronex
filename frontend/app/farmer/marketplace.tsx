@@ -10,50 +10,84 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useCallback } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
+import { getProductImage } from '../../lib/utils';
+import { parseCommerceMeta } from '../../lib/commerceMeta';
 
 export default function Marketplace() {
   const router = useRouter();
-  const [crops, setCrops] = useState([]);
-  const [filteredCrops, setFilteredCrops] = useState([]);
+  const { userData } = useAuth();
+  const [crops, setCrops] = useState<any[]>([]);
+  const [filteredCrops, setFilteredCrops] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const categories = ['All', 'Grains', 'Vegetables', 'Fruits', 'Pulses', 'Raw Materials'];
+  const categories = ['All', 'Grains', 'Vegetables', 'Fruits', 'Pulses', 'Raw Materials', 'Resale'];
 
   const fetchCrops = async () => {
     try {
-      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-      const response = await fetch(`${backendUrl}/api/crops`);
-      if (response.ok) {
-        const data = await response.json();
-        setCrops(data);
-        setFilteredCrops(data);
+      setFetchError(null);
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          profiles:seller_id (name)
+        `)
+        .gt('quantity', 0)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      let filtered = (data ?? []).map((p: any) => {
+        const meta = parseCommerceMeta(p.description);
+        return {
+          ...p,
+          originalFarmerId: meta?.original_farmer_id,
+          isRelisted: meta?.product_kind === 'trader_relist',
+          farmerName: p.profiles?.name || 'Unknown',
+        };
+      });
+
+      if (userData?.role === 'farmer') {
+        filtered = filtered.filter((crop: any) => !crop.isRelisted);
       }
-    } catch (error) {
+      setCrops(filtered);
+      setFilteredCrops(filtered);
+    } catch (error: any) {
       console.error('Error fetching crops:', error);
+      setFetchError(error.message || 'Failed to load marketplace');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
-  useEffect(() => {
-    fetchCrops();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchCrops();
+    }, [userData?.role])
+  );
 
   useEffect(() => {
     let filtered = crops;
 
     if (selectedCategory !== 'All') {
-      filtered = filtered.filter((crop) => crop.category === selectedCategory);
+      if (selectedCategory === 'Resale') {
+        filtered = filtered.filter((crop: any) => crop.isRelisted);
+      } else {
+        filtered = filtered.filter((crop: any) => crop.crop_type === selectedCategory);
+      }
     }
 
     if (searchQuery) {
-      filtered = filtered.filter((crop) =>
+      filtered = filtered.filter((crop: any) =>
         crop.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -69,23 +103,22 @@ export default function Marketplace() {
   const renderCropCard = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.cropCard}
-      onPress={() => router.push(`/crop-details?id=${item._id}`)}
+      onPress={() => router.push(`/crop-details?id=${item.id}`)}
     >
-      <Image source={{ uri: item.imageBase64 }} style={styles.cropImage} />
+      <Image source={{ uri: getProductImage(item.name) }} style={styles.cropImage} />
       <View style={styles.cropInfo}>
         <Text style={styles.cropName}>{item.name}</Text>
-        <Text style={styles.cropCategory}>{item.category}</Text>
+        <Text style={styles.cropCategory}>{item.crop_type}</Text>
+        {item.isRelisted && (
+          <View style={styles.resaleBadge}>
+            <Text style={styles.resaleBadgeText}>🔄 Trader Certified</Text>
+          </View>
+        )}
         <View style={styles.cropDetails}>
           <View>
-            <Text style={styles.cropPrice}>₹{item.pricePerUnit}/{item.unit}</Text>
+            <Text style={styles.cropPrice}>₹{item.price_per_unit}/{item.unit}</Text>
             <Text style={styles.cropQuantity}>
-              {item.quantity - item.soldQuantity} {item.unit} available
-            </Text>
-          </View>
-          <View style={styles.cropLocation}>
-            <Ionicons name="location" size={14} color="#6b7280" />
-            <Text style={styles.cropLocationText} numberOfLines={1}>
-              {item.location}
+              {item.quantity} {item.unit} available
             </Text>
           </View>
         </View>
@@ -97,7 +130,7 @@ export default function Marketplace() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#10b981" />
+        <ActivityIndicator size="large" color="#16a34a" />
       </View>
     );
   }
@@ -107,6 +140,13 @@ export default function Marketplace() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Marketplace</Text>
       </View>
+
+      {fetchError ? (
+        <View style={styles.errorBanner}>
+          <Ionicons name="alert-circle" size={18} color="#b91c1c" />
+          <Text style={styles.errorText}>{fetchError}</Text>
+        </View>
+      ) : null}
 
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#9ca3af" style={styles.searchIcon} />
@@ -146,9 +186,9 @@ export default function Marketplace() {
 
       <FlatList
         data={filteredCrops}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item) => item.id}
         renderItem={renderCropCard}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[styles.listContent, { paddingBottom: 100 }]}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -185,6 +225,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#1f2937',
   },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fef2f2',
+    marginHorizontal: 16,
+    marginBottom: 8,
+    padding: 12,
+    borderRadius: 12,
+    gap: 8,
+  },
+  errorText: { flex: 1, color: '#b91c1c', fontSize: 14 },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -216,7 +267,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   categoryTabActive: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#16a34a',
   },
   categoryTabText: {
     fontSize: 14,
@@ -256,9 +307,22 @@ const styles = StyleSheet.create({
   },
   cropCategory: {
     fontSize: 14,
-    color: '#10b981',
+    color: '#16a34a',
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: 8,
+  },
+  resaleBadge: {
+    backgroundColor: '#fef3c7',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  resaleBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#92400e',
   },
   cropDetails: {
     flexDirection: 'row',
@@ -269,7 +333,7 @@ const styles = StyleSheet.create({
   cropPrice: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#10b981',
+    color: '#16a34a',
   },
   cropQuantity: {
     fontSize: 13,

@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-06-26T14:30:30.365Z",
+  "supabase_host": "aosnytcfcazlaolozehx.supabase.co",
+  "results": [
+    {
+      "name": "Production Supabase URL configured",
+      "ok": true,
+      "detail": "aosnytcfcazlaolozehx.supabase.co"
+    },
+    {
+      "name": "Marketplace products query",
+      "ok": true,
+      "detail": "5 listings"
+    },
+    {
+      "name": "Login (commerce.verify.farmer)",
+      "ok": true,
+      "detail": "7f29d290-be56-457b-a840-637a92c7e384"
+    },
+    {
+      "name": "Session restoration",
+      "ok": true,
+      "detail": "getSession after sign-in"
+    },
+    {
+      "name": "Users table / profile row",
+      "ok": true,
+      "detail": "role=farmer"
+    },
+    {
+      "name": "Wallet balance (users.walletBalance)",
+      "ok": true,
+      "detail": "balance=13233.13"
+    },
+    {
+      "name": "Wallet history",
+      "ok": true,
+      "detail": "5 entries"
+    },
+    {
+      "name": "Orders (buyer)",
+      "ok": true,
+      "detail": "0 orders"
+    },
+    {
+      "name": "Edge razorpay-create-order",
+      "ok": true,
+      "detail": "intent=3dbb5865-ec42-436d-b862-d306d2644d84"
+    },
+    {
+      "name": "Product details",
+      "ok": true,
+      "detail": "potato"
+    },
+    {
+      "name": "Sign out clears session",
+      "ok": true,
+      "detail": "session null after signOut"
+    }
+  ],
+  "pass": 11,
+  "fail": 0
+}

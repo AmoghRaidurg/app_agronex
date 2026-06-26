@@ -25,7 +25,7 @@ export default function Profile() {
           try {
             await signOut();
             // Use href to navigate outside tab group
-            router.replace('/(auth)/phone' as any);
+            router.replace('/auth/login');
           } catch (error) {
             Alert.alert('Error', 'Failed to sign out');
           }
@@ -44,12 +44,12 @@ export default function Profile() {
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>
-              {userData?.name.charAt(0).toUpperCase()}
+              {userData?.name?.charAt(0).toUpperCase() ?? '?'}
             </Text>
           </View>
           <Text style={styles.name}>{userData?.name}</Text>
           <View style={styles.roleBadge}>
-            <Text style={styles.roleText}>{userData?.role.toUpperCase()}</Text>
+            <Text style={styles.roleText}>{userData?.role?.toUpperCase() ?? ''}</Text>
           </View>
         </View>
 
@@ -60,19 +60,19 @@ export default function Profile() {
             <View style={styles.infoRow}>
               <Ionicons name="call" size={20} color="#6b7280" />
               <Text style={styles.infoLabel}>Phone</Text>
-              <Text style={styles.infoValue}>{userData?.phoneNumber}</Text>
+              <Text style={styles.infoValue}>{userData?.phoneNumber || '—'}</Text>
             </View>
             
             <View style={styles.infoRow}>
               <Ionicons name="location" size={20} color="#6b7280" />
               <Text style={styles.infoLabel}>Address</Text>
-              <Text style={styles.infoValue}>{userData?.address}</Text>
+              <Text style={styles.infoValue}>{userData?.address || '—'}</Text>
             </View>
             
             <View style={styles.infoRow}>
               <Ionicons name="card" size={20} color="#6b7280" />
               <Text style={styles.infoLabel}>Bank/UPI</Text>
-              <Text style={styles.infoValue}>{userData?.bankUPI}</Text>
+              <Text style={styles.infoValue}>{userData?.bankUPI || '—'}</Text>
             </View>
           </View>
         </View>
@@ -94,7 +94,7 @@ export default function Profile() {
           
           <TouchableOpacity style={styles.settingItem}>
             <Ionicons name="information-circle-outline" size={24} color="#374151" />
-            <Text style={styles.settingText}>About AGRONEX</Text>
+            <Text style={styles.settingText}>About AgroElevate</Text>
             <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
           </TouchableOpacity>
         </View>
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#10b981',
+    backgroundColor: '#16a34a',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   roleBadge: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#16a34a',
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 16,

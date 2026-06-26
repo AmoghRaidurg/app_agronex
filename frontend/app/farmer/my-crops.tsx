@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,14 +9,17 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
+import { supabase } from '../../lib/supabase';
+
+import { getProductImage } from '../../lib/utils';
 
 export default function MyCrops() {
   const { userData } = useAuth();
   const router = useRouter();
-  const [crops, setCrops] = useState([]);
+  const [crops, setCrops] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -24,12 +27,14 @@ export default function MyCrops() {
     if (!userData) return;
     
     try {
-      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-      const response = await fetch(`${backendUrl}/api/crops/farmer/${userData.uid}`);
-      if (response.ok) {
-        const data = await response.json();
-        setCrops(data);
-      }
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('seller_id', userData.uid)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setCrops(data ?? []);
     } catch (error) {
       console.error('Error fetching crops:', error);
     } finally {
@@ -38,9 +43,11 @@ export default function MyCrops() {
     }
   };
 
-  useEffect(() => {
-    fetchMyCrops();
-  }, [userData]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchMyCrops();
+    }, [userData?.uid]),
+  );
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -49,27 +56,24 @@ export default function MyCrops() {
 
   const renderCrop = ({ item }: { item: any }) => (
     <View style={styles.cropCard}>
-      <Image source={{ uri: item.imageBase64 }} style={styles.cropImage} />
+      <Image source={{ uri: getProductImage(item.name) }} style={styles.cropImage} />
       <View style={styles.cropInfo}>
         <Text style={styles.cropName}>{item.name}</Text>
-        <Text style={styles.cropCategory}>{item.category}</Text>
+        <Text style={styles.cropCategory}>{item.crop_type}</Text>
         <View style={styles.cropDetails}>
-          <Text style={styles.cropPrice}>₹{item.pricePerUnit}/{item.unit}</Text>
+          <Text style={styles.cropPrice}>₹{item.price_per_unit}/{item.unit}</Text>
           <View style={{
-            backgroundColor: item.status === 'available' ? '#10b981' : '#ef4444',
+            backgroundColor: item.quantity > 0 ? '#16a34a' : '#ef4444',
             paddingHorizontal: 12,
             paddingVertical: 4,
             borderRadius: 12,
           }}>
-            <Text style={styles.statusText}>{item.status.toUpperCase()}</Text>
+            <Text style={styles.statusText}>{item.quantity > 0 ? 'AVAILABLE' : 'SOLD OUT'}</Text>
           </View>
         </View>
         <Text style={styles.cropQuantity}>
-          Available: {item.quantity - item.soldQuantity}{item.unit} / {item.quantity}{item.unit}
+          Available: {item.quantity}{item.unit}
         </Text>
-        {item.soldQuantity > 0 && (
-          <Text style={styles.soldText}>Sold: {item.soldQuantity}{item.unit}</Text>
-        )}
       </View>
     </View>
   );
@@ -77,7 +81,7 @@ export default function MyCrops() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#10b981" />
+        <ActivityIndicator size="large" color="#16a34a" />
       </View>
     );
   }
@@ -90,15 +94,15 @@ export default function MyCrops() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Crops</Text>
         <TouchableOpacity onPress={() => router.push('/farmer/add-crop')}>
-          <Ionicons name="add-circle" size={24} color="#10b981" />
+          <Ionicons name="add-circle" size={24} color="#16a34a" />
         </TouchableOpacity>
       </View>
 
       <FlatList
         data={crops}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item) => item.id}
         renderItem={renderCrop}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[styles.listContent, { paddingBottom: 100 }]}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
   },
   cropCategory: {
     fontSize: 14,
-    color: '#10b981',
+    color: '#16a34a',
     fontWeight: '600',
     marginBottom: 12,
   },
@@ -187,7 +191,7 @@ const styles = StyleSheet.create({
   cropPrice: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#10b981',
+    color: '#16a34a',
   },
   statusText: {
     color: '#fff',
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
   },
   soldText: {
     fontSize: 14,
-    color: '#10b981',
+    color: '#16a34a',
     fontWeight: '600',
     marginTop: 4,
   },
@@ -216,7 +220,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   addButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: '#16a34a',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 24,

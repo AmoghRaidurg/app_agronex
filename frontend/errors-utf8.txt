@@ -1,0 +1,12 @@
+Line 269: 06-26 02:54:02.760  7970  7995 E ReactNativeJS: [Error: supabaseUrl is required.]
+Line 270: 06-26 02:54:02.767  7970  7996 W unknown:BridgelessReact: ReactHost{0}.handleHostException(message = "Error: supabaseUrl is required., stack:
+Line 305: --------- beginning of crash
+Line 306: 06-26 02:54:02.769  7970  7996 E AndroidRuntime: FATAL EXCEPTION: mqt_v_native
+Line 308: 06-26 02:54:02.769  7970  7996 E AndroidRuntime: com.facebook.react.common.JavascriptException: Error: supabaseUrl is required., stack:
+Line 343: 06-26 02:54:02.769  7970  7996 E AndroidRuntime: 	at com.facebook.react.modules.core.ExceptionsManagerModule.reportException(ExceptionsManagerModule.kt:52)
+Line 354: 06-26 02:54:02.775   575  8009 I DropBoxManagerService: add tag=data_app_crash isTagEnabled=true flags=0x2
+Line 356: 06-26 02:54:02.781  7970  7995 E ReactNativeJS: [Error: supabaseUrl is required.]
+Line 357: 06-26 02:54:02.786  7970  7995 E ReactNativeJS: [Error: supabaseUrl is required.]
+Line 359: 06-26 02:54:02.789  7970  7995 E ReactNativeJS: [Error: supabaseUrl is required.]
+Line 360: 06-26 02:54:02.792  7970  7995 E ReactNativeJS: { [TypeError: Cannot read property 'ErrorBoundary' of undefined]
+Line 362: 06-26 02:54:02.792  7970  7995 E ReactNativeJS:   isComponentError: true }

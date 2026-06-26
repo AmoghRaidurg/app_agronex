@@ -1,56 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import RoleDashboard, { RoleDashboardLoading } from '../../components/RoleDashboard';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function IndustrialistDashboard() {
   const { userData } = useAuth();
+  if (!userData) return <RoleDashboardLoading />;
 
+  const base = `/industrialist`;
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.greeting}>Welcome, {userData?.name}! 🏭</Text>
-        <Text style={styles.role}>Industrialist Dashboard</Text>
-      </View>
-      <View style={styles.content}>
-        <Text style={styles.message}>
-          Bulk purchase raw materials from farmers! Support fair trade with automatic farmer royalties.
-        </Text>
-      </View>
-    </View>
+    <RoleDashboard
+      emoji="🏭"
+      roleLabel="Industrialist Dashboard"
+      subtitle="Source raw materials in bulk from farmers and traders for your processing operations."
+      actions={[
+        { label: 'Marketplace', icon: 'storefront', color: '#16a34a', route: `${base}/marketplace` },
+        { label: 'My Orders', icon: 'receipt', color: '#3b82f6', route: `${base}/orders` },
+        { label: 'Wallet', icon: 'wallet', color: '#8b5cf6', route: `${base}/wallet` },
+        { label: 'Profile', icon: 'person', color: '#f59e0b', route: `${base}/profile` },
+      ]}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  header: {
-    backgroundColor: '#fff',
-    padding: 24,
-    paddingTop: 48,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1f2937',
-  },
-  role: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginTop: 4,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  message: {
-    fontSize: 18,
-    color: '#6b7280',
-    textAlign: 'center',
-  },
-});

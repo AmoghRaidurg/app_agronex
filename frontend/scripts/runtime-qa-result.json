@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-06-26T14:30:31.591Z",
+  "results": [
+    {
+      "name": "Auth login",
+      "ok": true,
+      "detail": "7f29d290-be56-457b-a840-637a92c7e384"
+    },
+    {
+      "name": "Products order by created_at",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "Orders nested order_items",
+      "ok": true,
+      "detail": "rows=0"
+    },
+    {
+      "name": "Order items by farmerId",
+      "ok": true,
+      "detail": "items=1"
+    },
+    {
+      "name": "checkout_order RPC exists",
+      "ok": true,
+      "detail": "Cart is empty"
+    },
+    {
+      "name": "payment_intents filter by user_id",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "Product profiles join",
+      "ok": true,
+      "detail": "ok"
+    }
+  ]
+}

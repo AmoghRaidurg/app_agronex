@@ -12,6 +12,7 @@ export default function RootLayout() {
         <Stack.Screen name="customer" />
         <Stack.Screen name="industrialist" />
         <Stack.Screen name="admin" />
+        <Stack.Screen name="crop-details" />
       </Stack>
     </AuthProvider>
   );

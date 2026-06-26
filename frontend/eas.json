@@ -1,0 +1,27 @@
+{
+  "cli": {
+    "version": ">= 18.0.0"
+  },
+  "build": {
+    "preview": {
+      "developmentClient": false,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://aosnytcfcazlaolozehx.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_tYlm0MfLh63DqGPeSBO9Kw_7SKwy9t2"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://aosnytcfcazlaolozehx.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_tYlm0MfLh63DqGPeSBO9Kw_7SKwy9t2"
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  }
+}

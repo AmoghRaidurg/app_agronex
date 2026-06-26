@@ -10,6 +10,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
+import { supabase } from '../../lib/supabase';
 
 export default function AdminDashboard() {
   const { userData, signOut } = useAuth();
@@ -23,12 +24,15 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-      const response = await fetch(`${backendUrl}/api/admin/stats`);
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data);
-      }
+      const { data: users } = await supabase.from('users').select('uid, role');
+      const { data: orders } = await supabase.from('orders').select('totalAmount');
+      
+      const totalUsers = users?.length || 0;
+      const totalFarmers = users?.filter((u: any) => u.role === 'farmer').length || 0;
+      const totalOrders = orders?.length || 0;
+      const totalVolume = orders?.reduce((sum: number, o: any) => sum + parseFloat(o.totalAmount), 0) || 0;
+      
+      setStats({ totalUsers, totalFarmers, totalOrders, totalVolume });
     } catch (error) {
       console.error('Error fetching stats:', error);
     } finally {
@@ -39,7 +43,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#10b981" />
+        <ActivityIndicator size="large" color="#16a34a" />
       </View>
     );
   }
@@ -51,14 +55,14 @@ export default function AdminDashboard() {
           <Text style={styles.greeting}>Admin Panel 🛡️</Text>
           <Text style={styles.name}>{userData?.name}</Text>
         </View>
-        <TouchableOpacity onPress={() => signOut().then(() => router.replace('/auth/phone'))}>
+        <TouchableOpacity onPress={() => signOut().then(() => router.replace('/auth/login'))}>
           <Ionicons name="log-out-outline" size={24} color="#ef4444" />
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content}>
         <View style={styles.statsGrid}>
-          <View style={[styles.statCard, { backgroundColor: '#10b981' }]}>
+          <View style={[styles.statCard, { backgroundColor: '#16a34a' }]}>
             <Ionicons name="people" size={32} color="#fff" />
             <Text style={styles.statValue}>{stats?.totalUsers || 0}</Text>
             <Text style={styles.statLabel}>Total Users</Text>
