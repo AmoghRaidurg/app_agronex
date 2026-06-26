@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
-  TextInput
+  TextInput,
 } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { useFocusEffect } from 'expo-router';
@@ -23,84 +23,53 @@ import {
   orderItemOriginalFarmerId,
   orderItemPrice,
   orderTotal,
+  safeOrderId,
+  orderItems,
 } from '../../lib/orderUtils';
-import { withRetry, friendlyError } from '../../lib/asyncUtils';
+import { fetchUserOrders, friendlyError, type OrderRow } from '../../lib/ordersApi';
 import { ErrorBanner, EmptyState } from '../../components/ScreenPrimitives';
 import { flatListPerfProps, TAB_LIST_PADDING } from '../../lib/listConfig';
 
 export default function Orders() {
   const { userData } = useAuth();
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Resell Modal State
   const [resellModalVisible, setResellModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [resellPrice, setResellPrice] = useState('');
   const [isReselling, setIsReselling] = useState(false);
 
   const fetchOrders = useCallback(async () => {
-    if (!userData) return;
-    
+    if (!userData?.uid) {
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
+
     try {
       setFetchError(null);
-      const buyerOrders = await withRetry(async () => {
-        const { data, error } = await supabase
-          .from('orders')
-          .select('*, order_items(*)')
-          .eq('buyerId', userData.uid);
-        if (error) throw error;
-        return data ?? [];
-      });
-      
-      // 2. Get orders where user is the SELLER
-      let sellerOrders: any[] = [];
-      if (userData.role === 'farmer' || userData.role === 'trader') {
-        const { data: items, error: itemsErr } = await supabase
-          .from('order_items')
-          .select('orderId')
-          .eq('farmerId', userData.uid);
-        if (itemsErr) throw itemsErr;
-        
-        if (items && items.length > 0) {
-          const orderIds = [...new Set(items.map((i: any) => i.orderId))];
-          const { data: sOrders, error: sOrdersErr } = await supabase
-            .from('orders')
-            .select('*, order_items(*)')
-            .in('id', orderIds);
-          if (sOrdersErr) throw sOrdersErr;
-          sellerOrders = sOrders || [];
-        }
-      }
-
-      // Combine and deduplicate
-      const allOrdersMap: any = {};
-      [...(buyerOrders || []), ...sellerOrders].forEach((o: any) => {
-        allOrdersMap[o.id] = o;
-      });
-      const allOrders = Object.values(allOrdersMap);
-      allOrders.sort((a: any, b: any) => {
-        const tb = new Date(orderCreatedAt(b)).getTime();
-        const ta = new Date(orderCreatedAt(a)).getTime();
-        return (Number.isNaN(tb) ? 0 : tb) - (Number.isNaN(ta) ? 0 : ta);
-      });
-
-      setOrders(allOrders as any);
+      setOrders(await fetchUserOrders(userData.uid, userData.role));
     } catch (error: unknown) {
       console.error('Error fetching orders:', error);
       setFetchError(friendlyError(error, 'Failed to load orders'));
+      setOrders([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [userData]);
+  }, [userData?.uid, userData?.role]);
 
   useFocusEffect(
     useCallback(() => {
+      if (!userData?.uid) {
+        setLoading(false);
+        return;
+      }
       fetchOrders();
-    }, [fetchOrders])
+    }, [userData?.uid, userData?.role, fetchOrders]),
   );
 
   const onRefresh = () => {
@@ -109,12 +78,18 @@ export default function Orders() {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return '#f59e0b';
-      case 'accepted': return '#3b82f6';
-      case 'shipped': return '#8b5cf6';
-      case 'delivered': return '#16a34a';
-      default: return '#6b7280';
+    switch ((status ?? '').toLowerCase()) {
+      case 'pending':
+        return '#f59e0b';
+      case 'accepted':
+        return '#3b82f6';
+      case 'shipped':
+        return '#8b5cf6';
+      case 'delivered':
+      case 'completed':
+        return '#16a34a';
+      default:
+        return '#6b7280';
     }
   };
 
@@ -122,7 +97,11 @@ export default function Orders() {
     if (!dateString) return '—';
     const date = new Date(dateString);
     if (Number.isNaN(date.getTime())) return '—';
-    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    return date.toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
   };
 
   const handleResellClick = (item: any) => {
@@ -139,7 +118,6 @@ export default function Orders() {
 
     setIsReselling(true);
     try {
-      // Create relist metadata string as expected by the production backend
       const description = buildRelistMeta(userData!.uid, {
         originalFarmerId: orderItemOriginalFarmerId(selectedItem) ?? null,
         orderItemId: selectedItem.id,
@@ -154,11 +132,10 @@ export default function Orders() {
         quantity: selectedItem.quantity,
         unit: selectedItem.unit,
         price_per_unit: parseFloat(resellPrice),
-        description: description,
+        description,
       };
 
       const { error } = await supabase.from('products').insert(payload);
-
       if (error) throw error;
 
       Alert.alert('Success', 'Item successfully listed on the marketplace for resale!');
@@ -170,57 +147,73 @@ export default function Orders() {
     }
   };
 
-  const renderOrder = ({ item }: { item: any }) => {
+  const renderOrder = ({ item }: { item: OrderRow }) => {
     const buyerId = orderBuyerId(item);
     const total = orderTotal(item);
+    const items = orderItems(item);
+    const orderId = safeOrderId(item);
 
     return (
-    <View style={styles.orderCard}>
-      <View style={styles.orderHeader}>
-        <View>
-          <Text style={styles.orderId}>Order #{(item.id).substring(0, 8)}</Text>
-          <Text style={styles.orderDate}>{formatDate(orderCreatedAt(item))}</Text>
-        </View>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-          <Text style={styles.statusText}>{(item.status ?? 'pending').toUpperCase()}</Text>
-        </View>
-      </View>
-
-      <View style={styles.orderDetails}>
-        <Text style={styles.buyerName}>
-          {buyerId === userData?.uid ? 'Your Purchase' : `Sale to: ${item.buyerName ?? item.buyer_name ?? 'Buyer'}`}
-        </Text>
-        {item.order_items && item.order_items.map((orderItem: any, index: number) => (
-          <View key={index} style={styles.itemRow}>
-            <View>
-              <Text style={styles.itemName}>{orderItemName(orderItem)}</Text>
-              <Text style={styles.itemQuantity}>
-                {orderItem.quantity}{orderItem.unit} x ₹{orderItemPrice(orderItem)}
-              </Text>
-            </View>
-            
-            {userData?.role === 'trader' && buyerId === userData.uid && (
-              <TouchableOpacity 
-                style={styles.resellBtn}
-                onPress={() => handleResellClick(orderItem)}
-              >
-                <Ionicons name="pricetag" size={12} color="#fff" />
-                <Text style={styles.resellBtnText}>Resell</Text>
-              </TouchableOpacity>
-            )}
+      <View style={styles.orderCard}>
+        <View style={styles.orderHeader}>
+          <View>
+            <Text style={styles.orderId}>Order #{orderId.substring(0, 8)}</Text>
+            <Text style={styles.orderDate}>{formatDate(orderCreatedAt(item))}</Text>
           </View>
-        ))}
-      </View>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: getStatusColor(String(item.status ?? 'pending')) },
+            ]}
+          >
+            <Text style={styles.statusText}>
+              {String(item.status ?? 'pending').toUpperCase()}
+            </Text>
+          </View>
+        </View>
 
-      <View style={styles.orderFooter}>
-        <Text style={styles.totalLabel}>Total Amount:</Text>
-        <Text style={styles.totalAmount}>₹{total.toFixed(2)}</Text>
+        <View style={styles.orderDetails}>
+          <Text style={styles.buyerName}>
+            {buyerId === userData?.uid
+              ? 'Your Purchase'
+              : `Sale to: ${(item.buyerName as string) ?? (item.buyer_name as string) ?? 'Buyer'}`}
+          </Text>
+          {items.length === 0 ? (
+            <Text style={styles.itemQuantity}>No line items recorded</Text>
+          ) : (
+            items.map((orderItem: any, index: number) => (
+              <View key={orderItem?.id ?? `${orderId}-${index}`} style={styles.itemRow}>
+                <View>
+                  <Text style={styles.itemName}>{orderItemName(orderItem)}</Text>
+                  <Text style={styles.itemQuantity}>
+                    {orderItem?.quantity ?? 0}
+                    {orderItem?.unit ?? ''} x ₹{orderItemPrice(orderItem)}
+                  </Text>
+                </View>
+
+                {userData?.role === 'trader' && buyerId === userData.uid ? (
+                  <TouchableOpacity
+                    style={styles.resellBtn}
+                    onPress={() => handleResellClick(orderItem)}
+                  >
+                    <Ionicons name="pricetag" size={12} color="#fff" />
+                    <Text style={styles.resellBtnText}>Resell</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            ))
+          )}
+        </View>
+
+        <View style={styles.orderFooter}>
+          <Text style={styles.totalLabel}>Total Amount:</Text>
+          <Text style={styles.totalAmount}>₹{total.toFixed(2)}</Text>
+        </View>
       </View>
-    </View>
-  );
+    );
   };
 
-  if (loading) {
+  if (loading && orders.length === 0 && !fetchError) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#16a34a" />
@@ -235,24 +228,33 @@ export default function Orders() {
       </View>
 
       {fetchError ? (
-        <ErrorBanner message={fetchError} onRetry={() => { setLoading(true); fetchOrders(); }} />
+        <ErrorBanner
+          message={fetchError}
+          onRetry={() => {
+            setLoading(true);
+            fetchOrders();
+          }}
+        />
       ) : null}
 
       <FlatList
         data={orders}
-        keyExtractor={(item: any) => item.id}
+        keyExtractor={(item) => safeOrderId(item)}
         renderItem={renderOrder}
         contentContainerStyle={[styles.listContent, { paddingBottom: TAB_LIST_PADDING }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         {...flatListPerfProps}
         ListEmptyComponent={
           !fetchError ? (
-            <EmptyState icon="receipt-outline" title="No orders yet" subtitle="Purchases and sales will appear here" />
+            <EmptyState
+              icon="receipt-outline"
+              title="No orders yet"
+              subtitle="Purchases and sales will appear here"
+            />
           ) : null
         }
       />
 
-      {/* Resell Modal */}
       <Modal visible={resellModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -263,8 +265,8 @@ export default function Orders() {
               </TouchableOpacity>
             </View>
             <Text style={styles.modalSub}>
-              You bought this at ₹{orderItemPrice(selectedItem)}/{selectedItem?.unit}. 
-              Enter your new selling price. (12.5% of profit goes to the original farmer).
+              You bought this at ₹{orderItemPrice(selectedItem)}/{selectedItem?.unit}. Enter your
+              new selling price. (12.5% of profit goes to the original farmer).
             </Text>
 
             <View style={styles.inputGroup}>
@@ -275,15 +277,20 @@ export default function Orders() {
                 onChangeText={setResellPrice}
                 keyboardType="numeric"
                 placeholder="E.g. 50"
+                placeholderTextColor="#9ca3af"
               />
             </View>
 
-            <TouchableOpacity 
-              style={styles.submitBtn} 
+            <TouchableOpacity
+              style={styles.submitBtn}
               onPress={submitResell}
               disabled={isReselling}
             >
-              {isReselling ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>List for Resale</Text>}
+              {isReselling ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.submitBtnText}>List for Resale</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -295,50 +302,86 @@ export default function Orders() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9fafb' },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  header: { backgroundColor: '#fff', padding: 16, paddingTop: 48, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#1f2937' },
-  errorBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fef2f2',
-    marginHorizontal: 16,
-    marginBottom: 8,
-    padding: 12,
-    borderRadius: 12,
-    gap: 8,
+  header: {
+    backgroundColor: '#fff',
+    padding: 16,
+    paddingTop: 48,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
   },
-  errorText: { flex: 1, color: '#b91c1c', fontSize: 14 },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#1f2937' },
   listContent: { padding: 16 },
-  orderCard: { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
-  orderHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+  orderCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  orderHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
   orderId: { fontSize: 16, fontWeight: 'bold', color: '#1f2937', marginBottom: 4 },
   orderDate: { fontSize: 13, color: '#9ca3af' },
   statusBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
   statusText: { color: '#fff', fontSize: 11, fontWeight: 'bold' },
   orderDetails: { marginBottom: 16 },
   buyerName: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 12 },
-  itemRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  itemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   itemName: { fontSize: 14, color: '#4b5563', fontWeight: '500' },
   itemQuantity: { fontSize: 13, color: '#6b7280', marginTop: 2 },
-  orderFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTopWidth: 1, borderTopColor: '#f3f4f6' },
+  orderFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f3f4f6',
+  },
   totalLabel: { fontSize: 16, fontWeight: '600', color: '#374151' },
   totalAmount: { fontSize: 20, fontWeight: 'bold', color: '#16a34a' },
-  emptyContainer: { alignItems: 'center', paddingVertical: 64 },
-  emptyText: { fontSize: 16, color: '#9ca3af', marginTop: 16 },
-  
-  // Resell button
-  resellBtn: { flexDirection: 'row', backgroundColor: '#f59e0b', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, alignItems: 'center' },
+  resellBtn: {
+    flexDirection: 'row',
+    backgroundColor: '#f59e0b',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
   resellBtnText: { color: '#fff', fontSize: 12, fontWeight: 'bold', marginLeft: 4 },
-
-  // Modal styles
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    padding: 20,
+  },
   modalContent: { backgroundColor: '#fff', borderRadius: 16, padding: 20 },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#1f2937' },
   modalSub: { fontSize: 14, color: '#6b7280', marginBottom: 20, lineHeight: 20 },
   inputGroup: { marginBottom: 20 },
   label: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8 },
   input: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, padding: 12, fontSize: 16 },
   submitBtn: { backgroundColor: '#16a34a', padding: 16, borderRadius: 8, alignItems: 'center' },
-  submitBtnText: { color: '#fff', fontSize: 16, fontWeight: 'bold' }
+  submitBtnText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });

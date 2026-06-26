@@ -158,4 +158,48 @@ export async function fetchPlatformOrders(options?: {
   });
 }
 
+export interface AddFundsResult {
+  success: boolean;
+  newBalance: number;
+  message: string;
+}
+
+export interface AdminWalletUser extends AdminProfile {
+  walletBalance: number | null;
+}
+
+export async function fetchAdminWalletUsers(): Promise<AdminWalletUser[]> {
+  const profiles = await fetchAllProfiles();
+  const rows = await Promise.all(
+    profiles.map(async (profile) => {
+      const { data } = await supabase
+        .from('users')
+        .select('walletBalance')
+        .eq('uid', profile.id)
+        .maybeSingle();
+      return {
+        ...profile,
+        walletBalance:
+          data?.walletBalance != null ? Number(data.walletBalance) : null,
+      };
+    }),
+  );
+  return rows;
+}
+
+/** Credit wallet via production add_funds RPC (updates balance + wallet_history). */
+export async function adminCreditWallet(
+  userId: string,
+  amount: number,
+  reason?: string,
+): Promise<AddFundsResult> {
+  const { data, error } = await supabase.rpc('add_funds', {
+    p_user_id: userId,
+    p_amount: amount,
+    p_payment_method: reason?.trim() || 'admin_credit',
+  });
+  if (error) throw error;
+  return data as AddFundsResult;
+}
+
 export { friendlyError };

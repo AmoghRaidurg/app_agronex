@@ -28,3 +28,17 @@ export function orderItemOriginalFarmerId(
 ): string | undefined {
   return item.originalFarmerId ?? item.original_farmer_id;
 }
+
+export function safeOrderId(order: { id?: string | null }): string {
+  const id = order.id;
+  if (!id) return 'unknown';
+  return String(id);
+}
+
+export function orderItems(order: {
+  order_items?: unknown[];
+  orderItems?: unknown[];
+}): unknown[] {
+  const items = order.order_items ?? order.orderItems;
+  return Array.isArray(items) ? items : [];
+}

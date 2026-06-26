@@ -18,7 +18,12 @@ import { fetchPlatformStats, friendlyError, type PlatformStats } from '../../lib
 type MenuItem = {
   label: string;
   icon: keyof typeof Ionicons.glyphMap;
-  route: '/admin/manage-users' | '/admin/approve-farmers' | '/admin/transactions' | '/admin/platform-settings';
+  route:
+    | '/admin/manage-users'
+    | '/admin/approve-farmers'
+    | '/admin/transactions'
+    | '/admin/wallet-management'
+    | '/admin/platform-settings';
   badge?: number;
 };
 
@@ -84,6 +89,11 @@ export default function AdminDashboard() {
       label: 'All Transactions',
       icon: 'receipt-outline',
       route: '/admin/transactions',
+    },
+    {
+      label: 'Wallet Management',
+      icon: 'wallet-outline',
+      route: '/admin/wallet-management',
     },
     {
       label: 'Platform Settings',

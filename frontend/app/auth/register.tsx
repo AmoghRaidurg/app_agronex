@@ -19,6 +19,7 @@ export default function Register() {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -34,8 +35,12 @@ export default function Register() {
   ];
 
   const handleRegister = async () => {
-    if (!email || !password || !name || !phone || !address || !bankUPI || !selectedRole) {
+    if (!email || !password || !confirmPassword || !name || !phone || !address || !bankUPI || !selectedRole) {
       Alert.alert('Error', 'Please fill all fields and select a role');
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
       return;
     }
 
@@ -81,10 +86,11 @@ export default function Register() {
         </View>
 
         <View style={styles.form}>
-          <Text style={styles.label}>Email Address</Text>
+          <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
-            placeholder="Email Address"
+            placeholder="Email"
+            placeholderTextColor="#9ca3af"
             keyboardType="email-address"
             autoCapitalize="none"
             value={email}
@@ -94,16 +100,28 @@ export default function Register() {
           <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
-            placeholder="Password (min 6 characters)"
+            placeholder="Password"
+            placeholderTextColor="#9ca3af"
             secureTextEntry
             value={password}
             onChangeText={setPassword}
           />
 
+          <Text style={styles.label}>Confirm Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            placeholderTextColor="#9ca3af"
+            secureTextEntry
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+          />
+
           <Text style={styles.label}>Full Name</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter your name"
+            placeholder="Name"
+            placeholderTextColor="#9ca3af"
             value={name}
             onChangeText={setName}
           />
@@ -111,7 +129,8 @@ export default function Register() {
           <Text style={styles.label}>Phone Number</Text>
           <TextInput
             style={styles.input}
-            placeholder="Phone Number"
+            placeholder="Phone"
+            placeholderTextColor="#9ca3af"
             keyboardType="phone-pad"
             value={phone}
             onChangeText={setPhone}
@@ -120,7 +139,8 @@ export default function Register() {
           <Text style={styles.label}>Address</Text>
           <TextInput
             style={styles.input}
-            placeholder="Village/City, District, State"
+            placeholder="Address"
+            placeholderTextColor="#9ca3af"
             value={address}
             onChangeText={setAddress}
             multiline
@@ -129,7 +149,8 @@ export default function Register() {
           <Text style={styles.label}>Bank Account / UPI ID</Text>
           <TextInput
             style={styles.input}
-            placeholder="UPI ID or Account Number"
+            placeholder="Bank / UPI"
+            placeholderTextColor="#9ca3af"
             value={bankUPI}
             onChangeText={setBankUPI}
           />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TextInput,
   ActivityIndicator,
   RefreshControl,
+  ScrollView,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -19,19 +20,21 @@ import { parseCommerceMeta } from '../../lib/commerceMeta';
 import { withRetry, friendlyError } from '../../lib/asyncUtils';
 import { ErrorBanner, EmptyState } from '../../components/ScreenPrimitives';
 import { flatListPerfProps, TAB_LIST_PADDING } from '../../lib/listConfig';
+import {
+  MARKETPLACE_CATEGORIES,
+  matchesMarketplaceCategory,
+  type MarketplaceCategory,
+} from '../../lib/productCategories';
 
 export default function Marketplace() {
   const router = useRouter();
   const { userData } = useAuth();
   const [crops, setCrops] = useState<any[]>([]);
-  const [filteredCrops, setFilteredCrops] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-
-  const categories = ['All', 'Grains', 'Vegetables', 'Fruits', 'Pulses', 'Raw Materials', 'Resale'];
+  const [selectedCategory, setSelectedCategory] = useState<MarketplaceCategory>('All');
 
   const fetchCrops = async () => {
     try {
@@ -51,11 +54,13 @@ export default function Marketplace() {
 
       let filtered = (data ?? []).map((p: any) => {
         const meta = parseCommerceMeta(p.description);
+        const isRelisted = meta?.product_kind === 'trader_relist';
         return {
           ...p,
           originalFarmerId: meta?.original_farmer_id,
-          isRelisted: meta?.product_kind === 'trader_relist',
+          isRelisted,
           farmerName: p.profiles?.name || 'Unknown',
+          commerceMeta: meta,
         };
       });
 
@@ -63,7 +68,6 @@ export default function Marketplace() {
         filtered = filtered.filter((crop: any) => !crop.isRelisted);
       }
       setCrops(filtered);
-      setFilteredCrops(filtered);
     } catch (error: unknown) {
       console.error('Error fetching crops:', error);
       setFetchError(friendlyError(error, 'Failed to load marketplace'));
@@ -79,24 +83,28 @@ export default function Marketplace() {
     }, [userData?.role])
   );
 
-  useEffect(() => {
+  const filteredCrops = useMemo(() => {
     let filtered = crops;
 
     if (selectedCategory !== 'All') {
-      if (selectedCategory === 'Resale') {
-        filtered = filtered.filter((crop: any) => crop.isRelisted);
-      } else {
-        filtered = filtered.filter((crop: any) => crop.crop_type === selectedCategory);
-      }
-    }
-
-    if (searchQuery) {
       filtered = filtered.filter((crop: any) =>
-        crop.name.toLowerCase().includes(searchQuery.toLowerCase())
+        matchesMarketplaceCategory(
+          crop.crop_type,
+          crop.commerceMeta,
+          crop.isRelisted,
+          selectedCategory,
+        ),
       );
     }
 
-    setFilteredCrops(filtered);
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      filtered = filtered.filter((crop: any) =>
+        String(crop.name ?? '').toLowerCase().includes(q),
+      );
+    }
+
+    return filtered;
   }, [searchQuery, selectedCategory, crops]);
 
   const onRefresh = () => {
@@ -154,36 +162,39 @@ export default function Marketplace() {
         <TextInput
           style={styles.searchInput}
           placeholder="Search crops..."
+          placeholderTextColor="#9ca3af"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
       </View>
 
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={categories}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.categoryTab,
-              selectedCategory === item && styles.categoryTabActive,
-            ]}
-            onPress={() => setSelectedCategory(item)}
-          >
-            <Text
+      <View style={styles.categoryBar}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoryList}
+        >
+          {MARKETPLACE_CATEGORIES.map((item) => (
+            <TouchableOpacity
+              key={item}
               style={[
-                styles.categoryTabText,
-                selectedCategory === item && styles.categoryTabTextActive,
+                styles.categoryTab,
+                selectedCategory === item && styles.categoryTabActive,
               ]}
+              onPress={() => setSelectedCategory(item)}
             >
-              {item}
-            </Text>
-          </TouchableOpacity>
-        )}
-        contentContainerStyle={styles.categoryList}
-      />
+              <Text
+                style={[
+                  styles.categoryTabText,
+                  selectedCategory === item && styles.categoryTabTextActive,
+                ]}
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       <FlatList
         data={filteredCrops}
@@ -260,16 +271,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1f2937',
   },
+  categoryBar: {
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+    paddingVertical: 10,
+    zIndex: 2,
+    elevation: 2,
+  },
   categoryList: {
     paddingHorizontal: 16,
-    marginBottom: 8,
+    alignItems: 'center',
   },
   categoryTab: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     backgroundColor: '#f3f4f6',
     borderRadius: 20,
     marginRight: 8,
+    minHeight: 40,
+    justifyContent: 'center',
   },
   categoryTabActive: {
     backgroundColor: '#16a34a',

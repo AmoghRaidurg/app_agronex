@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-26T14:59:24.810Z",
+  "timestamp": "2026-06-26T17:28:05.655Z",
   "supabase_host": "aosnytcfcazlaolozehx.supabase.co",
   "results": [
     {
@@ -45,7 +45,7 @@
     {
       "name": "Edge razorpay-create-order",
       "ok": true,
-      "detail": "intent=d60ccbb9-34a7-4c78-985c-85631bc659b9"
+      "detail": "intent=a4b742e2-5463-4f5e-8fb4-7fbc2a8c4960"
     },
     {
       "name": "Product details",

@@ -59,10 +59,12 @@ export default function Login() {
           <View style={styles.form}>
             <Text style={styles.label}>Sign In</Text>
 
+            <Text style={styles.fieldLabel}>Email</Text>
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
-                placeholder="Email Address"
+                placeholder="Email"
+                placeholderTextColor="#9ca3af"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
@@ -70,10 +72,12 @@ export default function Login() {
               />
             </View>
 
+            <Text style={styles.fieldLabel}>Password</Text>
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
                 placeholder="Password"
+                placeholderTextColor="#9ca3af"
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
@@ -141,6 +145,12 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     marginBottom: 24,
     textAlign: 'center',
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
   },
   inputContainer: {
     flexDirection: 'row',
