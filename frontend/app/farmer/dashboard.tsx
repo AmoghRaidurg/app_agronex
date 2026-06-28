@@ -224,6 +224,16 @@ export default function FarmerDashboard() {
 
             <TouchableOpacity
               style={styles.actionButton}
+              onPress={() => router.push('/farmer/intelligence' as never)}
+            >
+              <View style={[styles.actionIcon, { backgroundColor: '#0ea5e9' }]}>
+                <Ionicons name="analytics" size={28} color="#fff" />
+              </View>
+              <Text style={styles.actionText}>Market Intel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
               onPress={() => router.push('/farmer/wallet')}
             >
               <View style={[styles.actionIcon, { backgroundColor: '#8b5cf6' }]}>

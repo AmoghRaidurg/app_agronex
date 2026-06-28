@@ -14,7 +14,7 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Take photos of your crops",
         "NSPhotoLibraryUsageDescription": "Choose crop images from gallery",
-        "NSLocationWhenInUseUsageDescription": "Show nearby farmers"
+        "NSLocationWhenInUseUsageDescription": "Find nearby mandis and regional market prices"
       }
     },
     "android": {
@@ -56,7 +56,13 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow AgroElevate to use your location for nearby mandi prices and market intelligence."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

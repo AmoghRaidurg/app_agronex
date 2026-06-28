@@ -46,6 +46,15 @@ export default function TraderLayout() {
         }}
       />
       <Tabs.Screen
+        name="intelligence"
+        options={{
+          title: 'Intel',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="analytics" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="orders"
         options={{
           title: 'Orders',

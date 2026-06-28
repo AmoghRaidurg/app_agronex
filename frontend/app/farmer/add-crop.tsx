@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,15 +11,17 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Linking,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { buildFarmerListingMeta } from '../../lib/commerceMeta';
 import { friendlyError } from '../../lib/asyncUtils';
+import { fetchCropPricing, type CropPricingAssistant } from '../../lib/aiApi';
+import { PricingAssistantCard } from '../../components/intelligence/PricingAssistantCard';
 
 export default function AddCrop() {
   const { userData } = useAuth();
@@ -35,6 +37,36 @@ export default function AddCrop() {
   const [location, setLocation] = useState(userData?.address || '');
   const [imageBase64, setImageBase64] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pricing, setPricing] = useState<CropPricingAssistant | null>(null);
+  const [pricingLoading, setPricingLoading] = useState(false);
+  const pricingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const priceAutoFilled = useRef(false);
+
+  useEffect(() => {
+    if (!name.trim() || !userData?.uid) {
+      setPricing(null);
+      return;
+    }
+    if (pricingTimer.current) clearTimeout(pricingTimer.current);
+    pricingTimer.current = setTimeout(async () => {
+      setPricingLoading(true);
+      try {
+        const result = await fetchCropPricing(userData.uid, name.trim(), location || userData.address);
+        setPricing(result);
+        if (!priceAutoFilled.current) {
+          setPrice(String(result.suggested_price));
+          priceAutoFilled.current = true;
+        }
+      } catch {
+        setPricing(null);
+      } finally {
+        setPricingLoading(false);
+      }
+    }, 400);
+    return () => {
+      if (pricingTimer.current) clearTimeout(pricingTimer.current);
+    };
+  }, [name, userData?.uid, location, userData?.address]);
 
   const categories = ['Grains', 'Vegetables', 'Fruits', 'Pulses', 'Raw Materials'];
   const units = ['kg', 'quintal', 'ton', 'pieces'];
@@ -172,8 +204,15 @@ export default function AddCrop() {
           style={styles.input}
           placeholder="e.g., Wheat, Rice, Tomato"
           value={name}
-          onChangeText={setName}
+          onChangeText={(v) => {
+            priceAutoFilled.current = false;
+            setName(v);
+          }}
         />
+
+        {(name.trim().length > 1 || pricingLoading || pricing) ? (
+          <PricingAssistantCard data={pricing} loading={pricingLoading} />
+        ) : null}
 
         <Text style={styles.label}>Category *</Text>
         <View style={styles.categoryContainer}>
@@ -242,7 +281,10 @@ export default function AddCrop() {
           placeholder="₹ 0"
           keyboardType="numeric"
           value={price}
-          onChangeText={setPrice}
+          onChangeText={(v) => {
+            priceAutoFilled.current = true;
+            setPrice(v);
+          }}
         />
 
         <Text style={styles.label}>Harvest Date (Optional)</Text>

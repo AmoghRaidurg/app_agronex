@@ -1,0 +1,61 @@
+﻿=== STEP 1 ===
+Test-Path android: True
+C: FreeSpace bytes: 370143232
+C: FreeSpace GB: 0.34
+HEAD: 098e539dc92d99e3e36e9cbe261dff65f6394a64
+"newArchEnabled": true,
+=== STEP 2 EAS BUILD ===
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+Γÿà eas-cli@20.4.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+System.Management.Automation.RemoteException
+The field "cli.appVersionSource" is not set, but it will be required in the future. Learn more: https://docs.expo.dev/build-reference/app-versions/
+Resolved "preview" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "preview" environment on EAS.
+Environment variables loaded from the "preview" build profile "env" configuration: EXPO_PUBLIC_SUPABASE_URL, EXPO_PUBLIC_SUPABASE_ANON_KEY.
+
+
+
+The field "cli.appVersionSource" is not set, but it will be required in the future. Learn more: https://docs.expo.dev/build-reference/app-versions/
+ΓêÜ Using remote Android credentials (Expo server)
+ΓêÜ Using Keystore from configuration: Build Credentials HpN7EljeZc (default)
+
+Compressing project files and uploading to EAS Build. Learn more: https://expo.fyi/eas-build-archive
+- Compressing project files
+- Uploading to EAS Build (0 / 27.0 MB)
+ΓêÜ Uploaded to EAS 7s
+- Computing project fingerprint
+ΓêÜ Computed project fingerprint
+
+See logs: https://expo.dev/accounts/fuzzyfate/projects/agroelevate-app/builds/96b0aae0-ca63-482f-bcaf-81b0430e1ab6
+
+Waiting for build to complete. You can press Ctrl+C to exit.
+- Waiting for build to complete.
+ΓêÜ Build finished
+
+  ΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûä
+  Γûê ΓûäΓûäΓûäΓûäΓûä ΓûêΓûÇΓûäΓûäΓûÇΓûäΓûä    ΓûêΓûä  Γûä ΓûÇΓûêΓûä ΓûÇΓûê ΓûäΓûäΓûäΓûäΓûä Γûê
+  Γûê Γûê   Γûê ΓûêΓûä  ΓûÇΓûÇΓûê  ΓûêΓûäΓûêΓûäΓûäΓûê  ΓûêΓûê  ΓûêΓûê Γûê   Γûê Γûê
+  Γûê ΓûêΓûäΓûäΓûäΓûê Γûê ΓûÇΓûêΓûäΓûäΓûä  ΓûäΓûÇΓûÇΓûÇΓûäΓûÇΓûÇΓûäΓûÇ Γûê  Γûê ΓûêΓûäΓûäΓûäΓûê Γûê
+  ΓûêΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûê ΓûÇΓûäΓûêΓûäΓûêΓûäΓûê ΓûÇΓûäΓûÇΓûäΓûÇΓûäΓûê ΓûêΓûäΓûÇ ΓûêΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûê
+  Γûê  ΓûÇΓûäΓûÇΓûÇΓûäΓûäΓûÇΓûê Γûä  ΓûäΓûêΓûêΓûÇΓûêΓûê  ΓûÇΓûê  ΓûäΓûäΓûÇΓûÇ ΓûäΓûäΓûÇ ΓûäΓûÇΓûê
+  ΓûêΓûäΓûÇ ΓûäΓûÇΓûÇΓûäΓûêΓûêΓûÇ ΓûêΓûêΓûÇΓûäΓûÇΓûêΓûäΓûä Γûä ΓûäΓûÇΓûä ΓûêΓûêΓûêΓûÇ ΓûÇ ΓûÇΓûäΓûÇ Γûê
+  ΓûêΓûê Γûä ΓûêΓûÇΓûä ΓûêΓûÇΓûêΓûê ΓûäΓûêΓûäΓûÇ  ΓûÇ  ΓûÇΓûêΓûÇ ΓûäΓûäΓûê  ΓûÇΓûêΓûêΓûêΓûê Γûê
+  ΓûêΓûÇ ΓûäΓûä ΓûäΓûä  ΓûÇΓûä ΓûêΓûÇΓûÇΓûÇ  ΓûäΓûÇΓûÇΓûÇ ΓûäΓûÇ  ΓûêΓûäΓûä Γûä  ΓûêΓûÇΓûäΓûê
+  ΓûêΓûÇΓûÇ ΓûäΓûÇΓûÇΓûäΓûÇΓûÇ ΓûÇΓûÇΓûêΓûÇΓûÇΓûêΓûäΓûäΓûêΓûêΓûä  ΓûÇ ΓûÇΓûêΓûä Γûä  ΓûÇΓûê ΓûÇ Γûê
+  ΓûêΓûêΓûêΓûäΓûÇ ΓûÇΓûäΓûêΓûê ΓûÇΓûÇΓûÇΓûäΓûêΓûÇΓûêΓûÇ ΓûêΓûêΓûÇΓûÇΓûÇΓûêΓûêΓûäΓûÇΓûêΓûäΓûÇΓûÇΓûêΓûäΓûÇ ΓûäΓûê
+  ΓûêΓûäΓûÇΓûêΓûÇΓûäΓûêΓûäΓûäΓûÇΓûäΓûêΓûä ΓûäΓûêΓûäΓûäΓûÇΓûêΓûäΓûÇ ΓûêΓûä   ΓûêΓûÇΓûê ΓûäΓûäΓûêΓûêΓûê Γûê
+  ΓûêΓûêΓûÇ Γûä ΓûÇΓûä ΓûêΓûê ΓûêΓûä ΓûêΓûêΓûäΓûê  ΓûêΓûÇ ΓûÇΓûÇΓûÇ ΓûêΓûÇ ΓûäΓûê ΓûäΓûêΓûäΓûäΓûê
+  ΓûêΓûêΓûêΓûäΓûêΓûÇΓûäΓûäΓûêΓûêΓûäΓûêΓûêΓûê  ΓûêΓûÇ ΓûêΓûÇΓûÇΓûä ΓûäΓûä ΓûêΓûêΓûä  ΓûÇΓûê ΓûêΓûä Γûê
+  ΓûêΓûäΓûÇΓûêΓûÇΓûêΓûäΓûäΓûäΓûêΓûêΓûäΓûäΓûêΓûÇΓûêΓûê  ΓûÇΓûêΓûêΓûÇΓûÇΓûäΓûê  ΓûêΓûÇΓûÇΓûÇΓûêΓûêΓûêΓûäΓûÇΓûäΓûê
+  ΓûêΓûäΓûäΓûäΓûêΓûäΓûêΓûäΓûäΓûÇΓûäΓûäΓûÇΓûêΓûÇΓûäΓûêΓûäΓûä ΓûäΓûä ΓûäΓûÇΓûÇΓûêΓûÇ  ΓûäΓûäΓûä  ΓûäΓûêΓûÇΓûê
+  Γûê ΓûäΓûäΓûäΓûäΓûä ΓûêΓûäΓûê ΓûÇ Γûê ΓûÇΓûÇΓûÇΓûäΓûÇΓûÇΓûÇΓûäΓûÇ ΓûäΓûä  ΓûêΓûäΓûê Γûê  ΓûäΓûê
+  Γûê Γûê   Γûê ΓûêΓûÇ ΓûêΓûäΓûê ΓûäΓûê ΓûêΓûäΓûäΓûê ΓûÇΓûäΓûÇ ΓûäΓûê ΓûäΓûä  ΓûêΓûÇ ΓûÇΓûê
+  Γûê ΓûêΓûäΓûäΓûäΓûê ΓûêΓûÇΓûÇΓûäΓûêΓûäΓûÇ ΓûêΓûäΓûêΓûÇ  ΓûÇΓûêΓûÇΓûê ΓûêΓûêΓûÇ ΓûêΓûÇΓûä ΓûäΓûäΓûäΓûê
+  ΓûêΓûäΓûäΓûäΓûäΓûäΓûäΓûäΓûêΓûäΓûêΓûäΓûêΓûêΓûäΓûäΓûêΓûäΓûäΓûêΓûêΓûêΓûäΓûêΓûêΓûäΓûäΓûêΓûäΓûäΓûêΓûäΓûäΓûêΓûêΓûêΓûäΓûäΓûê
+
+
+≡ƒñû Open this link on your Android devices (or scan the QR code) to install the app:
+https://expo.dev/accounts/fuzzyfate/projects/agroelevate-app/builds/96b0aae0-ca63-482f-bcaf-81b0430e1ab6

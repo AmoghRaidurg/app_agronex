@@ -353,3 +353,472 @@ export async function checkAiHealth(): Promise<boolean> {
     clearTimeout(timeout);
   }
 }
+
+// ─── Market Intelligence (shared with Web) ───────────────────────────────────
+
+export interface LiveMarketPrice {
+  crop: string;
+  market: string;
+  district: string;
+  state: string;
+  modal_price: number;
+  min_price: number;
+  max_price: number;
+  arrival_quantity: string;
+  date: string;
+  last_updated: string;
+}
+
+export interface NearbyMarket {
+  id: string;
+  name: string;
+  crop: string;
+  price: number;
+  unit: string;
+  latitude: number;
+  longitude: number;
+  distance_km: number;
+  travel_time_min: number;
+  district: string;
+  state: string;
+}
+
+export interface PriceComparisonPoint {
+  period: string;
+  agroelevate_avg: number;
+  government_avg: number;
+}
+
+export interface PriceComparisonData {
+  crop_name: string;
+  agroelevate_avg: number;
+  government_avg: number;
+  difference_pct: number;
+  profit_difference: number;
+  expected_earnings: number;
+  percentage_gain: number;
+  weekly: PriceComparisonPoint[];
+  monthly: PriceComparisonPoint[];
+  yearly: PriceComparisonPoint[];
+}
+
+export interface MspEntry {
+  crop: string;
+  season: string;
+  msp_per_quintal: number;
+  state: string;
+  effective_from: string;
+  last_updated: string;
+}
+
+export interface ForecastEntry {
+  crop_name: string;
+  horizon: 'weekly' | 'monthly' | 'yearly';
+  period_label: string;
+  predicted_price: number;
+  confidence: number;
+  trend: string;
+}
+
+export interface CropPricingAssistant {
+  crop_name: string;
+  todays_mandi_price: number;
+  district_average: number;
+  state_average: number;
+  agroelevate_average: number;
+  nearby_highest_price: number;
+  suggested_price: number;
+  confidence: number;
+  expected_extra_profit: number;
+  recommendation: string;
+  unit: string;
+  reasons: string[];
+  _fallback?: boolean;
+}
+
+export interface ReferenceBenchmark {
+  average_land_hectares: number;
+  average_production_kg_year: number;
+  average_annual_income: number;
+  income_per_kg: number;
+  label: string;
+  disclaimer: string;
+}
+
+export interface BenchmarkProjectionYear {
+  year: number;
+  income: number;
+  income_per_kg: number;
+  royalty: number;
+  direct_selling_gain: number;
+  waste_reduction: number;
+  market_linkage: number;
+}
+
+export interface BenchmarkComparison {
+  without_agroelevate: BenchmarkProjectionYear[];
+  with_agroelevate: BenchmarkProjectionYear[];
+  disclaimer: string;
+}
+
+export interface IntelligenceOverview {
+  highest_crop_price: { crop: string; price: number; market: string };
+  nearby_market: { name: string; distance_km: number };
+  best_selling_crop: { crop: string; volume_kg: number };
+  avg_agroelevate_price: number;
+  avg_government_price: number;
+  difference_pct: number;
+  demand_score: number;
+  supply_score: number;
+  weekly_trend: string;
+  regional_trend: string;
+  last_updated: string;
+}
+
+async function miFetchOrNull<T>(path: string, params: Record<string, string>): Promise<T | null> {
+  try {
+    return await aiFetch<T>(path, params);
+  } catch {
+    return null;
+  }
+}
+
+function deriveOverview(d: FarmerDashboard): IntelligenceOverview {
+  const topPred = [...(d.market_predictions || [])].sort(
+    (a, b) => b.price_max - a.price_max,
+  )[0];
+  const topCrop = d.district_analytics?.top_crops?.[0];
+  const demand = d.demand_intelligence?.[0];
+  const hist = d.historical_trends?.[0];
+  const govAvg = topPred ? (topPred.price_min + topPred.price_max) / 2 : 0;
+  const aeAvg = d.district_analytics?.avg_marketplace_price ?? govAvg;
+  const diff = govAvg > 0 ? ((aeAvg - govAvg) / govAvg) * 100 : 0;
+
+  return {
+    highest_crop_price: {
+      crop: topPred?.crop_name ?? '—',
+      price: topPred?.price_max ?? 0,
+      market: d.geo?.district ?? 'Regional',
+    },
+    nearby_market: { name: d.geo?.district ?? 'Nearby mandi', distance_km: 12 },
+    best_selling_crop: {
+      crop: topCrop?.crop_name ?? topPred?.crop_name ?? '—',
+      volume_kg: topCrop?.available_kg ?? 0,
+    },
+    avg_agroelevate_price: aeAvg,
+    avg_government_price: govAvg,
+    difference_pct: Math.round(diff * 10) / 10,
+    demand_score: demand?.demand_score ?? topPred?.demand_score ?? 0,
+    supply_score: Math.max(0, 100 - (demand?.demand_score ?? 50)),
+    weekly_trend: hist?.trend ?? topPred?.trend ?? 'stable',
+    regional_trend: d.seasonal_analytics?.season ?? 'stable',
+    last_updated: new Date().toISOString(),
+  };
+}
+
+function deriveLivePrices(d: FarmerDashboard): LiveMarketPrice[] {
+  const geo = d.geo;
+  return (d.market_predictions || []).map((p) => ({
+    crop: p.crop_name,
+    market: geo?.district ?? 'Regional Mandi',
+    district: geo?.district ?? '—',
+    state: geo?.state ?? '—',
+    modal_price: Math.round((p.price_min + p.price_max) / 2),
+    min_price: p.price_min,
+    max_price: p.price_max,
+    arrival_quantity: `${p.trader_activity_kg ?? 0} kg`,
+    date: new Date().toISOString().slice(0, 10),
+    last_updated: new Date().toISOString(),
+  }));
+}
+
+function deriveNearbyMarkets(
+  d: FarmerDashboard,
+  lat = 20.5937,
+  lng = 78.9629,
+): NearbyMarket[] {
+  const geo = d.geo;
+  return (d.market_predictions || []).slice(0, 8).map((p, i) => ({
+    id: `m-${i}`,
+    name: `${geo?.district ?? 'Regional'} Mandi`,
+    crop: p.crop_name,
+    price: Math.round((p.price_min + p.price_max) / 2),
+    unit: 'kg',
+    latitude: lat + (i - 4) * 0.05,
+    longitude: lng + (i % 3) * 0.04,
+    distance_km: 5 + i * 3,
+    travel_time_min: 10 + i * 5,
+    district: geo?.district ?? '—',
+    state: geo?.state ?? '—',
+  }));
+}
+
+function derivePriceComparison(d: FarmerDashboard, crop?: string): PriceComparisonData {
+  const pred = d.market_predictions?.find((p) => !crop || p.crop_name === crop)
+    ?? d.market_predictions?.[0];
+  const ae = d.district_analytics?.avg_marketplace_price
+    ?? (pred ? (pred.price_min + pred.price_max) / 2 : 0);
+  const gov = pred ? (pred.price_min + pred.price_max) / 2 * 0.86 : ae * 0.86;
+  const diff = gov > 0 ? ((ae - gov) / gov) * 100 : 0;
+  const mk = (n: number, label: string): PriceComparisonPoint => ({
+    period: label,
+    agroelevate_avg: Math.round(ae * (1 + n * 0.02)),
+    government_avg: Math.round(gov * (1 + n * 0.01)),
+  });
+
+  return {
+    crop_name: pred?.crop_name ?? crop ?? 'All crops',
+    agroelevate_avg: ae,
+    government_avg: gov,
+    difference_pct: Math.round(diff * 10) / 10,
+    profit_difference: Math.round((ae - gov) * 100) / 100,
+    expected_earnings: Math.round(ae * 400),
+    percentage_gain: Math.round(diff * 10) / 10,
+    weekly: ['W1', 'W2', 'W3', 'W4'].map((w, i) => mk(i, w)),
+    monthly: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map((m, i) => mk(i, m)),
+    yearly: ['Y1', 'Y2', 'Y3'].map((y, i) => mk(i + 1, y)),
+  };
+}
+
+function deriveMsp(d: FarmerDashboard): MspEntry[] {
+  return (d.market_predictions || []).map((p) => ({
+    crop: p.crop_name,
+    season: d.seasonal_analytics?.season ?? 'Kharif',
+    msp_per_quintal: Math.round(p.price_min * 100),
+    state: d.geo?.state ?? '—',
+    effective_from: new Date().toISOString().slice(0, 10),
+    last_updated: new Date().toISOString(),
+  }));
+}
+
+function deriveForecasts(d: FarmerDashboard): ForecastEntry[] {
+  const entries: ForecastEntry[] = [];
+  for (const p of d.market_predictions || []) {
+    entries.push({
+      crop_name: p.crop_name,
+      horizon: 'weekly',
+      period_label: 'Next 7 days',
+      predicted_price: Math.round((p.price_min + p.price_max) / 2),
+      confidence: p.demand_confidence ?? 70,
+      trend: p.trend,
+    });
+  }
+  for (const f of d.income_forecasts || []) {
+    entries.push({
+      crop_name: 'Portfolio',
+      horizon: 'yearly',
+      period_label: String(f.forecast_year),
+      predicted_price: f.projected_revenue,
+      confidence: f.confidence_score,
+      trend: f.growth_rate >= 0 ? 'rising' : 'falling',
+    });
+  }
+  return entries;
+}
+
+function deriveCropPricing(d: FarmerDashboard, cropName: string): CropPricingAssistant {
+  const pred = d.market_predictions?.find(
+    (p) => p.crop_name.toLowerCase() === cropName.toLowerCase(),
+  ) ?? d.market_predictions?.[0];
+  const demand = d.demand_intelligence?.find(
+    (x) => x.crop_name.toLowerCase() === cropName.toLowerCase(),
+  );
+  const mandi = pred ? (pred.price_min + pred.price_max) / 2 : 36;
+  const district = d.district_analytics?.avg_marketplace_price ?? mandi;
+  const state = mandi * 0.95;
+  const ae = district * 1.08;
+  const nearby = pred?.price_max ?? mandi * 1.08;
+  const suggested = Math.round((ae + nearby) / 2);
+  const reasons: string[] = [];
+  if (pred) reasons.push(`Nearby mandi price ₹${Math.round(mandi)}/kg`);
+  if (demand) {
+    reasons.push(`Marketplace demand ${demand.demand_score > 70 ? 'High' : 'Moderate'}`);
+    reasons.push(`District demand ${demand.demand_trend ?? 'stable'}`);
+  }
+  reasons.push(`Average AgroElevate sale ₹${Math.round(ae)}/kg`);
+  if (pred) reasons.push(`Supply ${pred.demand_score > 60 ? 'Moderate' : 'High'}`);
+
+  return {
+    crop_name: cropName,
+    todays_mandi_price: Math.round(mandi),
+    district_average: Math.round(district),
+    state_average: Math.round(state),
+    agroelevate_average: Math.round(ae),
+    nearby_highest_price: Math.round(nearby),
+    suggested_price: suggested,
+    confidence: pred?.demand_confidence ?? demand?.market_confidence ?? 85,
+    expected_extra_profit: Math.max(0, suggested - mandi),
+    recommendation: suggested >= ae ? 'Sell via AgroElevate' : 'Consider local mandi',
+    unit: 'kg',
+    reasons,
+    _fallback: d._fallback,
+  };
+}
+
+function deriveBenchmark(): ReferenceBenchmark {
+  return {
+    average_land_hectares: 1.34,
+    average_production_kg_year: 4000,
+    average_annual_income: 245000,
+    income_per_kg: 61.25,
+    label: 'Reference Benchmark',
+    disclaimer: 'Illustrative Only — Not Personal Income',
+  };
+}
+
+function deriveBenchmarkComparison(d: FarmerDashboard): BenchmarkComparison {
+  const base = d.income_forecasts?.[0]?.baseline_revenue ?? 245000;
+  const mk = (mult: number, y: number): BenchmarkProjectionYear => ({
+    year: y,
+    income: Math.round(base * mult * (1 + y * 0.05)),
+    income_per_kg: Math.round((base * mult) / 4000),
+    royalty: Math.round(base * 0.125 * y),
+    direct_selling_gain: Math.round(base * 0.15 * y),
+    waste_reduction: Math.round(base * 0.05 * y),
+    market_linkage: Math.round(base * 0.08 * y),
+  });
+
+  return {
+    without_agroelevate: [1, 2, 3].map((y) => mk(1, y)),
+    with_agroelevate: [1, 2, 3].map((y) => mk(1.35, y)),
+    disclaimer: 'Illustrative Projection — Based on benchmark assumptions',
+  };
+}
+
+export async function fetchIntelligenceOverview(
+  userId: string,
+  location?: string,
+): Promise<IntelligenceOverview> {
+  const remote = await miFetchOrNull<IntelligenceOverview>(
+    '/api/intelligence/overview',
+    { user_id: userId, ...(location ? { location } : {}) },
+  );
+  if (remote) return remote;
+  const dash = await fetchFarmerDashboard(userId, location);
+  return deriveOverview(dash);
+}
+
+export async function fetchLiveMarketPrices(
+  userId: string,
+  location?: string,
+): Promise<LiveMarketPrice[]> {
+  const remote = await miFetchOrNull<{ prices: LiveMarketPrice[] }>(
+    '/api/intelligence/market-prices',
+    { user_id: userId, ...(location ? { location } : {}) },
+  );
+  if (remote?.prices?.length) return remote.prices;
+  const dash = await fetchFarmerDashboard(userId, location);
+  return deriveLivePrices(dash);
+}
+
+export async function fetchNearbyMarkets(
+  userId: string,
+  location?: string,
+  lat?: number,
+  lng?: number,
+): Promise<NearbyMarket[]> {
+  const params: Record<string, string> = { user_id: userId };
+  if (location) params.location = location;
+  if (lat != null) params.lat = String(lat);
+  if (lng != null) params.lng = String(lng);
+  const remote = await miFetchOrNull<{ markets: NearbyMarket[] }>(
+    '/api/intelligence/nearby-markets',
+    params,
+  );
+  if (remote?.markets?.length) return remote.markets;
+  const dash = await fetchFarmerDashboard(userId, location);
+  return deriveNearbyMarkets(dash, lat, lng);
+}
+
+export async function fetchPriceComparison(
+  userId: string,
+  crop?: string,
+  location?: string,
+): Promise<PriceComparisonData> {
+  const params: Record<string, string> = { user_id: userId };
+  if (crop) params.crop = crop;
+  if (location) params.location = location;
+  const remote = await miFetchOrNull<PriceComparisonData>(
+    '/api/intelligence/price-comparison',
+    params,
+  );
+  if (remote) return remote;
+  const dash = await fetchFarmerDashboard(userId, location);
+  return derivePriceComparison(dash, crop);
+}
+
+export async function fetchMspData(
+  userId: string,
+  location?: string,
+): Promise<MspEntry[]> {
+  const remote = await miFetchOrNull<{ entries: MspEntry[] }>(
+    '/api/intelligence/msp',
+    { user_id: userId, ...(location ? { location } : {}) },
+  );
+  if (remote?.entries?.length) return remote.entries;
+  const dash = await fetchFarmerDashboard(userId, location);
+  return deriveMsp(dash);
+}
+
+export async function fetchMarketForecasts(
+  userId: string,
+  location?: string,
+): Promise<ForecastEntry[]> {
+  const remote = await miFetchOrNull<{ forecasts: ForecastEntry[] }>(
+    '/api/intelligence/forecast',
+    { user_id: userId, ...(location ? { location } : {}) },
+  );
+  if (remote?.forecasts?.length) return remote.forecasts;
+  const dash = await fetchFarmerDashboard(userId, location);
+  return deriveForecasts(dash);
+}
+
+export async function fetchCropPricing(
+  userId: string,
+  cropName: string,
+  location?: string,
+): Promise<CropPricingAssistant> {
+  const params: Record<string, string> = { user_id: userId, crop_name: cropName };
+  if (location) params.location = location;
+  const remote = await miFetchOrNull<CropPricingAssistant>(
+    '/api/intelligence/crop-pricing',
+    params,
+  );
+  if (remote) return remote;
+  const dash = await fetchFarmerDashboard(userId, location);
+  return deriveCropPricing(dash, cropName);
+}
+
+export async function fetchReferenceBenchmark(
+  userId: string,
+): Promise<ReferenceBenchmark> {
+  const remote = await miFetchOrNull<ReferenceBenchmark>(
+    '/api/intelligence/benchmark',
+    { user_id: userId },
+  );
+  if (remote) return remote;
+  return deriveBenchmark();
+}
+
+export async function fetchBenchmarkComparison(
+  userId: string,
+  location?: string,
+): Promise<BenchmarkComparison> {
+  const remote = await miFetchOrNull<BenchmarkComparison>(
+    '/api/intelligence/benchmark-comparison',
+    { user_id: userId, ...(location ? { location } : {}) },
+  );
+  if (remote) return remote;
+  const dash = await fetchFarmerDashboard(userId, location);
+  return deriveBenchmarkComparison(dash);
+}
+
+export async function fetchIntelligenceDashboard(
+  userId: string,
+  role: string,
+  location?: string,
+): Promise<FarmerDashboard | TraderDashboard | IndustrialistDashboard> {
+  if (role === 'trader') return fetchTraderDashboard(userId);
+  if (role === 'industrialist') return fetchIndustrialistDashboard(userId);
+  return fetchFarmerDashboard(userId, location);
+}
