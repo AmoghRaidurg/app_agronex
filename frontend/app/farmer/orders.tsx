@@ -27,8 +27,21 @@ import {
   orderItems,
 } from '../../lib/orderUtils';
 import { fetchUserOrders, friendlyError, type OrderRow } from '../../lib/ordersApi';
+import { isTraderDbRole } from '../../lib/roleUtils';
 import { ErrorBanner, EmptyState } from '../../components/ScreenPrimitives';
 import { flatListPerfProps, TAB_LIST_PADDING } from '../../lib/listConfig';
+
+type OrderLineItem = {
+  id?: string;
+  quantity?: number;
+  unit?: string;
+  cropName?: string;
+  crop_name?: string;
+  pricePerUnit?: number;
+  price_per_unit?: number;
+  originalFarmerId?: string;
+  original_farmer_id?: string;
+};
 
 export default function Orders() {
   const { userData } = useAuth();
@@ -38,7 +51,7 @@ export default function Orders() {
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   const [resellModalVisible, setResellModalVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedItem, setSelectedItem] = useState<OrderLineItem | null>(null);
   const [resellPrice, setResellPrice] = useState('');
   const [isReselling, setIsReselling] = useState(false);
 
@@ -77,6 +90,12 @@ export default function Orders() {
     fetchOrders();
   };
 
+  const closeResellModal = () => {
+    setResellModalVisible(false);
+    setSelectedItem(null);
+    setResellPrice('');
+  };
+
   const getStatusColor = (status: string) => {
     switch ((status ?? '').toLowerCase()) {
       case 'pending':
@@ -104,13 +123,20 @@ export default function Orders() {
     });
   };
 
-  const handleResellClick = (item: any) => {
+  const handleResellClick = (item: OrderLineItem) => {
     setSelectedItem(item);
     setResellPrice('');
     setResellModalVisible(true);
   };
 
   const submitResell = async () => {
+    if (!selectedItem || !userData?.uid) {
+      return;
+    }
+    if (!selectedItem.id || selectedItem.quantity == null) {
+      Alert.alert('Error', 'This order item cannot be resold.');
+      return;
+    }
     if (!resellPrice || isNaN(Number(resellPrice))) {
       Alert.alert('Invalid Price', 'Please enter a valid selling price.');
       return;
@@ -118,7 +144,7 @@ export default function Orders() {
 
     setIsReselling(true);
     try {
-      const description = buildRelistMeta(userData!.uid, {
+      const description = buildRelistMeta(userData.uid, {
         originalFarmerId: orderItemOriginalFarmerId(selectedItem) ?? null,
         orderItemId: selectedItem.id,
         listQty: selectedItem.quantity,
@@ -126,7 +152,7 @@ export default function Orders() {
       });
 
       const payload = {
-        seller_id: userData!.uid,
+        seller_id: userData.uid,
         name: orderItemName(selectedItem),
         crop_type: 'Resale',
         quantity: selectedItem.quantity,
@@ -139,7 +165,7 @@ export default function Orders() {
       if (error) throw error;
 
       Alert.alert('Success', 'Item successfully listed on the marketplace for resale!');
-      setResellModalVisible(false);
+      closeResellModal();
     } catch (error: unknown) {
       Alert.alert('Error', friendlyError(error, 'Could not list item.'));
     } finally {
@@ -150,7 +176,10 @@ export default function Orders() {
   const renderOrder = ({ item }: { item: OrderRow }) => {
     const buyerId = orderBuyerId(item);
     const total = orderTotal(item);
-    const items = orderItems(item);
+    const lineItems = orderItems(item).filter(
+      (orderItem): orderItem is OrderLineItem =>
+        orderItem != null && typeof orderItem === 'object',
+    );
     const orderId = safeOrderId(item);
 
     return (
@@ -178,20 +207,22 @@ export default function Orders() {
               ? 'Your Purchase'
               : `Sale to: ${(item.buyerName as string) ?? (item.buyer_name as string) ?? 'Buyer'}`}
           </Text>
-          {items.length === 0 ? (
+          {lineItems.length === 0 ? (
             <Text style={styles.itemQuantity}>No line items recorded</Text>
           ) : (
-            items.map((orderItem: any, index: number) => (
-              <View key={orderItem?.id ?? `${orderId}-${index}`} style={styles.itemRow}>
+            lineItems.map((orderItem, index) => (
+              <View key={orderItem.id ?? `${orderId}-${index}`} style={styles.itemRow}>
                 <View>
                   <Text style={styles.itemName}>{orderItemName(orderItem)}</Text>
                   <Text style={styles.itemQuantity}>
-                    {orderItem?.quantity ?? 0}
-                    {orderItem?.unit ?? ''} x ₹{orderItemPrice(orderItem)}
+                    {orderItem.quantity ?? 0}
+                    {orderItem.unit ?? ''} x ₹{orderItemPrice(orderItem)}
                   </Text>
                 </View>
 
-                {userData?.role === 'trader' && buyerId === userData.uid ? (
+                {userData &&
+                isTraderDbRole(userData.role) &&
+                buyerId === userData.uid ? (
                   <TouchableOpacity
                     style={styles.resellBtn}
                     onPress={() => handleResellClick(orderItem)}
@@ -238,12 +269,14 @@ export default function Orders() {
       ) : null}
 
       <FlatList
+        style={styles.list}
         data={orders}
         keyExtractor={(item) => safeOrderId(item)}
         renderItem={renderOrder}
         contentContainerStyle={[styles.listContent, { paddingBottom: TAB_LIST_PADDING }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         {...flatListPerfProps}
+        removeClippedSubviews={false}
         ListEmptyComponent={
           !fetchError ? (
             <EmptyState
@@ -255,46 +288,48 @@ export default function Orders() {
         }
       />
 
-      <Modal visible={resellModalVisible} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Resell {orderItemName(selectedItem)}</Text>
-              <TouchableOpacity onPress={() => setResellModalVisible(false)}>
-                <Ionicons name="close" size={24} color="#6b7280" />
+      {resellModalVisible && selectedItem ? (
+        <Modal visible transparent animationType="fade" onRequestClose={closeResellModal}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Resell {orderItemName(selectedItem)}</Text>
+                <TouchableOpacity onPress={closeResellModal}>
+                  <Ionicons name="close" size={24} color="#6b7280" />
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.modalSub}>
+                You bought this at ₹{orderItemPrice(selectedItem)}/{selectedItem.unit ?? 'unit'}.
+                Enter your new selling price. (12.5% of profit goes to the original farmer).
+              </Text>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>New Price Per {selectedItem.unit ?? 'unit'} (₹)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={resellPrice}
+                  onChangeText={setResellPrice}
+                  keyboardType="numeric"
+                  placeholder="E.g. 50"
+                  placeholderTextColor="#9ca3af"
+                />
+              </View>
+
+              <TouchableOpacity
+                style={styles.submitBtn}
+                onPress={submitResell}
+                disabled={isReselling}
+              >
+                {isReselling ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.submitBtnText}>List for Resale</Text>
+                )}
               </TouchableOpacity>
             </View>
-            <Text style={styles.modalSub}>
-              You bought this at ₹{orderItemPrice(selectedItem)}/{selectedItem?.unit}. Enter your
-              new selling price. (12.5% of profit goes to the original farmer).
-            </Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>New Price Per {selectedItem?.unit} (₹)</Text>
-              <TextInput
-                style={styles.input}
-                value={resellPrice}
-                onChangeText={setResellPrice}
-                keyboardType="numeric"
-                placeholder="E.g. 50"
-                placeholderTextColor="#9ca3af"
-              />
-            </View>
-
-            <TouchableOpacity
-              style={styles.submitBtn}
-              onPress={submitResell}
-              disabled={isReselling}
-            >
-              {isReselling ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.submitBtnText}>List for Resale</Text>
-              )}
-            </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      ) : null}
     </View>
   );
 }
@@ -310,6 +345,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e5e7eb',
   },
   headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#1f2937' },
+  list: { flex: 1 },
   listContent: { padding: 16 },
   orderCard: {
     backgroundColor: '#fff',

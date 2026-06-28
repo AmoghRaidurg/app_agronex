@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
+import { normalizeAppRole } from '../lib/roleUtils';
 
 interface UserData {
   uid: string;
@@ -56,9 +57,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .single();
 
     if (!error && data) {
-      setUserData(data as UserData);
+      const normalized = {
+        ...(data as UserData),
+        role: normalizeAppRole((data as UserData).role) as UserData['role'],
+      };
+      setUserData(normalized);
       setProvisioningFailed(false);
-      await AsyncStorage.setItem('userData', JSON.stringify(data));
+      await AsyncStorage.setItem('userData', JSON.stringify(normalized));
       return;
     }
     throw error ?? new Error('User profile not found');
@@ -144,7 +149,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const cachedData = await AsyncStorage.getItem('userData');
         if (cachedData && mounted) {
-          setUserData(JSON.parse(cachedData));
+          const parsed = JSON.parse(cachedData) as UserData;
+          setUserData({
+            ...parsed,
+            role: normalizeAppRole(parsed.role) as UserData['role'],
+          });
         }
       } catch {
         // ignore cache errors

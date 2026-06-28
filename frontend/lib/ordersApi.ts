@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import { withRetry, friendlyError } from './asyncUtils';
-import { orderCreatedAt } from './orderUtils';
+import { orderCreatedAt, orderItems, safeOrderId } from './orderUtils';
+import { isSellerRole } from './roleUtils';
 
 export type OrderRow = {
   id: string;
@@ -17,18 +18,15 @@ export type OrderRow = {
   orderItems?: unknown[];
 };
 
-const SELLER_ROLES = new Set(['farmer', 'trader', 'industrialist']);
 const CHUNK_SIZE = 40;
 
-function orderItemsList(order: OrderRow): unknown[] {
-  const items = order.order_items ?? order.orderItems;
-  return Array.isArray(items) ? items : [];
-}
-
 /** Attach normalized order_items array on each order row. */
-export function normalizeOrderRow(row: Record<string, unknown>): OrderRow {
+export function normalizeOrderRow(row: Record<string, unknown> | null | undefined): OrderRow {
+  if (row == null || typeof row !== 'object') {
+    return { id: '', order_items: [] };
+  }
   const id = String(row.id ?? '');
-  const items = orderItemsList({ ...row, id, order_items: row.order_items, orderItems: row.orderItems } as OrderRow);
+  const items = orderItems({ order_items: row.order_items, orderItems: row.orderItems });
   return {
     id,
     buyerId: row.buyerId as string | undefined,
@@ -51,17 +49,30 @@ async function fetchBuyerOrders(userId: string): Promise<OrderRow[]> {
     .eq('buyerId', userId);
 
   if (error) throw error;
-  return (data ?? []).map((row) => normalizeOrderRow(row as Record<string, unknown>));
+  return (data ?? [])
+    .filter((row): row is Record<string, unknown> => row != null && typeof row === 'object')
+    .map((row) => normalizeOrderRow(row));
 }
 
 async function fetchSellerOrderIds(userId: string): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('order_items')
-    .select('orderId')
-    .eq('farmerId', userId);
+  const [farmerRes, sellerRes] = await Promise.all([
+    supabase.from('order_items').select('orderId').eq('farmerId', userId),
+    supabase.from('order_items').select('orderId').eq('sellerId', userId),
+  ]);
 
-  if (error) throw error;
-  return [...new Set((data ?? []).map((i) => String(i.orderId)).filter(Boolean))];
+  if (farmerRes.error) throw farmerRes.error;
+  if (sellerRes.error) throw sellerRes.error;
+
+  const toOrderId = (i: Record<string, unknown> | null | undefined): string => {
+    if (i == null || typeof i !== 'object') return '';
+    return String(i.order_id ?? i.orderId ?? '');
+  };
+
+  const ids = [
+    ...(farmerRes.data ?? []).map((i) => toOrderId(i as Record<string, unknown>)),
+    ...(sellerRes.data ?? []).map((i) => toOrderId(i as Record<string, unknown>)),
+  ];
+  return [...new Set(ids.filter(Boolean))];
 }
 
 async function fetchOrdersByIds(ids: string[]): Promise<OrderRow[]> {
@@ -79,7 +90,11 @@ async function fetchOrdersByIds(ids: string[]): Promise<OrderRow[]> {
       .select('*, order_items(*)')
       .in('id', chunk);
     if (error) throw error;
-    results.push(...(data ?? []).map((row) => normalizeOrderRow(row as Record<string, unknown>)));
+    results.push(
+      ...(data ?? [])
+        .filter((row): row is Record<string, unknown> => row != null && typeof row === 'object')
+        .map((row) => normalizeOrderRow(row)),
+    );
   }
   return results;
 }
@@ -92,14 +107,16 @@ export async function fetchUserOrders(
     const buyerOrders = await fetchBuyerOrders(userId);
 
     let sellerOrders: OrderRow[] = [];
-    if (SELLER_ROLES.has(role)) {
+    if (isSellerRole(role)) {
       const orderIds = await fetchSellerOrderIds(userId);
       sellerOrders = await fetchOrdersByIds(orderIds);
     }
 
     const merged = new Map<string, OrderRow>();
     for (const order of [...buyerOrders, ...sellerOrders]) {
-      if (order.id) merged.set(order.id, order);
+      if (order == null || typeof order !== 'object') continue;
+      const orderId = safeOrderId(order);
+      if (orderId !== 'unknown') merged.set(orderId, order);
     }
 
     return Array.from(merged.values()).sort((a, b) => {
