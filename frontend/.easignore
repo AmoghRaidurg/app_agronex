@@ -38,7 +38,3 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
-
-# Force EAS to run clean prebuild instead of using stale local native directories
-android/
-ios/
