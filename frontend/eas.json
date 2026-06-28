@@ -8,10 +8,12 @@
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://aosnytcfcazlaolozehx.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_tYlm0MfLh63DqGPeSBO9Kw_7SKwy9t2"
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_tYlm0MfLh63DqGPeSBO9Kw_7SKwy9t2",
+        "GRADLE_OPTS": "-Dorg.gradle.configureondemand=false -Dorg.gradle.parallel=false"
       },
       "android": {
         "buildType": "apk",
+        "image": "ubuntu-22.04-jdk-17-ndk-r26b",
         "gradleCommand": ":app:assembleRelease --no-configure-on-demand"
       }
     },
