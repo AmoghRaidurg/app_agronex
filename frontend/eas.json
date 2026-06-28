@@ -12,7 +12,8 @@
       },
       "android": {
         "buildType": "apk"
-      }
+      },
+      "prebuildCommand": "rm -rf android ios && npx expo prebuild --platform android"
     },
     "production": {
       "env": {
